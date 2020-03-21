@@ -1,0 +1,2806 @@
+ARM GAS  /tmp/ccfBEMvJ.s 			page 1
+
+
+   1              		.syntax unified
+   2              		.cpu cortex-m3
+   3              		.fpu softvfp
+   4              		.eabi_attribute 20, 1
+   5              		.eabi_attribute 21, 1
+   6              		.eabi_attribute 23, 3
+   7              		.eabi_attribute 24, 1
+   8              		.eabi_attribute 25, 1
+   9              		.eabi_attribute 26, 1
+  10              		.eabi_attribute 30, 1
+  11              		.eabi_attribute 34, 1
+  12              		.eabi_attribute 18, 4
+  13              		.thumb
+  14              		.syntax unified
+  15              		.file	"main.c"
+  16              		.text
+  17              	.Ltext0:
+  18              		.cfi_sections	.debug_frame
+  19              		.section	.text.MX_DMA_Init,"ax",%progbits
+  20              		.align	2
+  21              		.thumb
+  22              		.thumb_func
+  24              	MX_DMA_Init:
+  25              	.LFB80:
+  26              		.file 1 "Src/main.c"
+   1:Src/main.c    **** 
+   2:Src/main.c    **** /**
+   3:Src/main.c    ****   ******************************************************************************
+   4:Src/main.c    ****   * @file           : main.c
+   5:Src/main.c    ****   * @brief          : Main program body
+   6:Src/main.c    ****   ******************************************************************************
+   7:Src/main.c    ****   * This notice applies to any and all portions of this file
+   8:Src/main.c    ****   * that are not between comment pairs USER CODE BEGIN and
+   9:Src/main.c    ****   * USER CODE END. Other portions of this file, whether 
+  10:Src/main.c    ****   * inserted by the user or by software development tools
+  11:Src/main.c    ****   * are owned by their respective copyright owners.
+  12:Src/main.c    ****   *
+  13:Src/main.c    ****   * Copyright (c) 2020 STMicroelectronics International N.V. 
+  14:Src/main.c    ****   * All rights reserved.
+  15:Src/main.c    ****   *
+  16:Src/main.c    ****   * Redistribution and use in source and binary forms, with or without 
+  17:Src/main.c    ****   * modification, are permitted, provided that the following conditions are met:
+  18:Src/main.c    ****   *
+  19:Src/main.c    ****   * 1. Redistribution of source code must retain the above copyright notice, 
+  20:Src/main.c    ****   *    this list of conditions and the following disclaimer.
+  21:Src/main.c    ****   * 2. Redistributions in binary form must reproduce the above copyright notice,
+  22:Src/main.c    ****   *    this list of conditions and the following disclaimer in the documentation
+  23:Src/main.c    ****   *    and/or other materials provided with the distribution.
+  24:Src/main.c    ****   * 3. Neither the name of STMicroelectronics nor the names of other 
+  25:Src/main.c    ****   *    contributors to this software may be used to endorse or promote products 
+  26:Src/main.c    ****   *    derived from this software without specific written permission.
+  27:Src/main.c    ****   * 4. This software, including modifications and/or derivative works of this 
+  28:Src/main.c    ****   *    software, must execute solely and exclusively on microcontroller or
+  29:Src/main.c    ****   *    microprocessor devices manufactured by or for STMicroelectronics.
+  30:Src/main.c    ****   * 5. Redistribution and use of this software other than as permitted under 
+  31:Src/main.c    ****   *    this license is void and will automatically terminate your rights under 
+  32:Src/main.c    ****   *    this license. 
+ARM GAS  /tmp/ccfBEMvJ.s 			page 2
+
+
+  33:Src/main.c    ****   *
+  34:Src/main.c    ****   * THIS SOFTWARE IS PROVIDED BY STMICROELECTRONICS AND CONTRIBUTORS "AS IS" 
+  35:Src/main.c    ****   * AND ANY EXPRESS, IMPLIED OR STATUTORY WARRANTIES, INCLUDING, BUT NOT 
+  36:Src/main.c    ****   * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A 
+  37:Src/main.c    ****   * PARTICULAR PURPOSE AND NON-INFRINGEMENT OF THIRD PARTY INTELLECTUAL PROPERTY
+  38:Src/main.c    ****   * RIGHTS ARE DISCLAIMED TO THE FULLEST EXTENT PERMITTED BY LAW. IN NO EVENT 
+  39:Src/main.c    ****   * SHALL STMICROELECTRONICS OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
+  40:Src/main.c    ****   * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+  41:Src/main.c    ****   * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, 
+  42:Src/main.c    ****   * OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF 
+  43:Src/main.c    ****   * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING 
+  44:Src/main.c    ****   * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
+  45:Src/main.c    ****   * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  46:Src/main.c    ****   *
+  47:Src/main.c    ****   ******************************************************************************
+  48:Src/main.c    ****   */
+  49:Src/main.c    **** /* Includes ------------------------------------------------------------------*/
+  50:Src/main.c    **** #include "main.h"
+  51:Src/main.c    **** #include "stm32f1xx_hal.h"
+  52:Src/main.c    **** #include "cmsis_os.h"
+  53:Src/main.c    **** #include "arm_etm.h"
+  54:Src/main.c    **** 
+  55:Src/main.c    **** /* USER CODE BEGIN Includes */
+  56:Src/main.c    **** 
+  57:Src/main.c    **** /* USER CODE END Includes */
+  58:Src/main.c    **** 
+  59:Src/main.c    **** /* Private variables ---------------------------------------------------------*/
+  60:Src/main.c    **** CAN_HandleTypeDef hcan;
+  61:Src/main.c    **** 
+  62:Src/main.c    **** UART_HandleTypeDef huart1;
+  63:Src/main.c    **** UART_HandleTypeDef huart2;
+  64:Src/main.c    **** UART_HandleTypeDef huart3;
+  65:Src/main.c    **** DMA_HandleTypeDef hdma_usart2_rx;
+  66:Src/main.c    **** 
+  67:Src/main.c    **** osThreadId Task0Handle;
+  68:Src/main.c    **** osThreadId Task1Handle;
+  69:Src/main.c    **** 
+  70:Src/main.c    **** /* USER CODE BEGIN PV */
+  71:Src/main.c    **** /* Private variables ---------------------------------------------------------*/
+  72:Src/main.c    **** CAN_FilterConfTypeDef  sFliterConfig;
+  73:Src/main.c    **** CanTxMsgTypeDef TxMessage;
+  74:Src/main.c    **** CanRxMsgTypeDef RxMessage;
+  75:Src/main.c    **** 
+  76:Src/main.c    **** uint8_t aRxBuffer1[1];
+  77:Src/main.c    **** uint8_t aRxBuffer2[1];
+  78:Src/main.c    **** uint8_t aRxBuffer3[1];
+  79:Src/main.c    **** 
+  80:Src/main.c    **** uint8_t aRxBuffer2_Data[4];
+  81:Src/main.c    **** uint8_t aRxBuffer2_Data_flag = 0;
+  82:Src/main.c    **** uint8_t aRxBuffer2_Data_Index = 0;
+  83:Src/main.c    **** 
+  84:Src/main.c    **** #define BUFFERSIZE 255                                
+  85:Src/main.c    **** uint8_t ReceiveBuff[BUFFERSIZE];         //接收缓冲区
+  86:Src/main.c    **** uint8_t recv_end_flag = 0,Rx_len;        //接收完成中断，接收到字符长度
+  87:Src/main.c    **** 
+  88:Src/main.c    **** int TickCounter = 0;
+  89:Src/main.c    **** 
+ARM GAS  /tmp/ccfBEMvJ.s 			page 3
+
+
+  90:Src/main.c    **** int globalCounter = 0;
+  91:Src/main.c    **** /* USER CODE END PV */
+  92:Src/main.c    **** 
+  93:Src/main.c    **** /* Private function prototypes -----------------------------------------------*/
+  94:Src/main.c    **** void SystemClock_Config(void);
+  95:Src/main.c    **** static void MX_GPIO_Init(void);
+  96:Src/main.c    **** static void MX_DMA_Init(void);
+  97:Src/main.c    **** static void MX_CAN_Init(void);
+  98:Src/main.c    **** static void MX_USART1_UART_Init(void);
+  99:Src/main.c    **** static void MX_USART2_UART_Init(void);
+ 100:Src/main.c    **** static void MX_USART3_UART_Init(void);
+ 101:Src/main.c    **** void Func_Task0(void const * argument);
+ 102:Src/main.c    **** void Func_Task1(void const * argument);
+ 103:Src/main.c    **** static void MX_NVIC_Init(void);
+ 104:Src/main.c    **** 
+ 105:Src/main.c    **** /* USER CODE BEGIN PFP */
+ 106:Src/main.c    **** /* Private function prototypes -----------------------------------------------*/
+ 107:Src/main.c    **** void uartdamget(void);
+ 108:Src/main.c    **** /* USER CODE END PFP */
+ 109:Src/main.c    **** void configure_tracing()
+ 110:Src/main.c    **** {
+ 111:Src/main.c    ****     /* STM32 specific configuration to enable the TRACESWO IO pin */
+ 112:Src/main.c    ****     RCC->APB2ENR |= RCC_APB2ENR_AFIOEN;
+ 113:Src/main.c    ****     AFIO->MAPR |= (2 << 24); // Disable JTAG to release TRACESWO
+ 114:Src/main.c    ****     DBGMCU->CR |= DBGMCU_CR_TRACE_IOEN; // Enable IO trace pins 
+ 115:Src/main.c    ****     
+ 116:Src/main.c    ****     uint32_t DBGMCU_val = DBGMCU->CR; 
+ 117:Src/main.c    ****     // DBGMCU->CR |= 0x00000020; 
+ 118:Src/main.c    ****    
+ 119:Src/main.c    ****     if (!(DBGMCU->CR & DBGMCU_CR_TRACE_IOEN))
+ 120:Src/main.c    ****     {
+ 121:Src/main.c    ****         // Some (all?) STM32s don't allow writes to DBGMCU register until
+ 122:Src/main.c    ****         // C_DEBUGEN in CoreDebug->DHCSR is set. This cannot be set by the
+ 123:Src/main.c    ****         // CPU itself, so in practice you need to connect to the CPU with
+ 124:Src/main.c    ****         // a debugger once before resetting it.
+ 125:Src/main.c    ****         return;
+ 126:Src/main.c    ****     }
+ 127:Src/main.c    ****     
+ 128:Src/main.c    ****     /* Configure Trace Port Interface Unit */
+ 129:Src/main.c    ****     CoreDebug->DEMCR |= CoreDebug_DEMCR_TRCENA_Msk; // Enable access to registers
+ 130:Src/main.c    ****     TPI->ACPR = 8; // Trace clock = HCLK/(x+1) = 8MHz    这里HCLK是处理器时钟,这个值的�
+ 131:Src/main.c    ****     TPI->SPPR = 2; // Pin protocol = NRZ/USART
+ 132:Src/main.c    ****     
+ 133:Src/main.c    ****     // TPI->FFCR = 0x102;
+ 134:Src/main.c    ****     TPI->FFCR = 0x100; //为什么设置102开启ETM后，ITM输出就不对了？？,在博客http
+ 135:Src/main.c    ****     		       // TPIU packet framing enabled when bit 2 is set.
+ 136:Src/main.c    ****     		       // You can use 0x102 if you need both DWT/ITM and ETM.
+ 137:Src/main.c    ****                        // You can use 0x100 if you only need DWT/ITM and not ETM.
+ 138:Src/main.c    ****    
+ 139:Src/main.c    ****     /* Configure PC sampling and exception trace  */
+ 140:Src/main.c    ****     DWT->CTRL = (1 << DWT_CTRL_CYCTAP_Pos) // Prescaler for PC sampling
+ 141:Src/main.c    ****                                            // 0 = x32, 1 = x512  //
+ 142:Src/main.c    ****                     //bits[6]就是DWT_CYCCNT寄存器的0到5bit，那么节拍就是32记录一�
+ 143:Src/main.c    ****               | (0 << DWT_CTRL_POSTPRESET_Pos) // Postscaler for PC sampling
+ 144:Src/main.c    ****                                                 // Divider = value + 1
+ 145:Src/main.c    ****               | (1 << DWT_CTRL_PCSAMPLENA_Pos) // Enable PC sampling
+ 146:Src/main.c    ****               | (2 << DWT_CTRL_SYNCTAP_Pos)    // Sync packet interval
+ARM GAS  /tmp/ccfBEMvJ.s 			page 4
+
+
+ 147:Src/main.c    ****                                                // 0 = Off, 1 = Every 2^23 cycles,
+ 148:Src/main.c    ****                                                // 2 = Every 2^25, 3 = Every 2^27
+ 149:Src/main.c    ****               | (1 << DWT_CTRL_EXCTRCENA_Pos)  // Enable exception trace
+ 150:Src/main.c    ****               | (1 << DWT_CTRL_CYCCNTENA_Pos); // Enable cycle counter
+ 151:Src/main.c    ****     
+ 152:Src/main.c    ****     /* Configure instrumentation trace macroblock */
+ 153:Src/main.c    ****     ITM->LAR = 0xC5ACCE55;
+ 154:Src/main.c    ****     ITM->TCR = (1 << ITM_TCR_TraceBusID_Pos)  // Trace bus ID for TPIU
+ 155:Src/main.c    ****              | (1 << ITM_TCR_DWTENA_Pos)      // Enable events from DWT
+ 156:Src/main.c    ****              | (1 << ITM_TCR_SYNCENA_Pos)     // Enable sync packets
+ 157:Src/main.c    ****              | (1 << ITM_TCR_ITMENA_Pos)      // Main enable for ITM
+ 158:Src/main.c    ****              | (1 << ITM_TCR_TSENA_Pos)       // 使能ITM时间戳
+ 159:Src/main.c    ****              | (0 << ITM_TCR_TSPrescale_Pos); // 先不设置时间戳分频系数,00:不分频，0
+ 160:Src/main.c    ****     ITM->TER = 0xFFFFFFFF; // Enable all stimulus ports
+ 161:Src/main.c    **** 
+ 162:Src/main.c    **** 
+ 163:Src/main.c    ****     //ETM_Lock_Access = 0xC5ACCE55;
+ 164:Src/main.c    ****     //ETM_Control = 0x00001D1E;
+ 165:Src/main.c    ****     //ETM_Trigger_Event = 0x0000406F;
+ 166:Src/main.c    ****     //ETM_Trace_Enable_Event = 0x0000006F;
+ 167:Src/main.c    ****     //ETM_Trace_Start_Stop = 0x00000001;
+ 168:Src/main.c    **** 
+ 169:Src/main.c    **** 
+ 170:Src/main.c    ****    /* Configure embedded trace macroblock */
+ 171:Src/main.c    ****     ETM->LAR = 0xC5ACCE55;
+ 172:Src/main.c    ****     ETM_SetupMode();
+ 173:Src/main.c    ****     ETM->CR = ETM_CR_ETMEN // Enable ETM output port
+ 174:Src/main.c    ****             | ETM_CR_STALL_PROCESSOR // Stall processor when fifo is full
+ 175:Src/main.c    ****             | ETM_CR_BRANCH_OUTPUT // Report all branches
+ 176:Src/main.c    ****             | (1 << 4);//port_size位21,6,5,4是0001表示8bit，这里目前认为复位值都是0
+ 177:Src/main.c    ****     ETM->TRACEIDR = 2; // Trace bus ID for TPIU
+ 178:Src/main.c    ****     ETM->TECR1 = ETM_TECR1_EXCLUDE; // Trace always enabled
+ 179:Src/main.c    ****     ETM->FFRR = ETM_FFRR_EXCLUDE; // Stalling always enabled
+ 180:Src/main.c    ****     ETM->FFLR = 24; // Stall when less than N bytes free in FIFO (range 1..24)
+ 181:Src/main.c    ****                     // Larger values mean less latency in trace, but more stalls.
+ 182:Src/main.c    ****     // Note: we do not enable ETM trace yet, only for specific parts of code.
+ 183:Src/main.c    ****     
+ 184:Src/main.c    ****     ETM->TRIGGER = 0x0000406F;
+ 185:Src/main.c    ****     ETM->TEEVR = 0x0000006F;
+ 186:Src/main.c    ****     //ETM->TSSCR = 0x00000001;
+ 187:Src/main.c    **** 
+ 188:Src/main.c    **** }
+ 189:Src/main.c    **** 
+ 190:Src/main.c    **** void configure_watchpoint()
+ 191:Src/main.c    **** {
+ 192:Src/main.c    ****     /* This is an example of how to configure DWT to monitor a watchpoint.
+ 193:Src/main.c    ****        The data value is reported when the watchpoint is hit. */
+ 194:Src/main.c    ****     
+ 195:Src/main.c    ****     /* Monitor all accesses to GPIOC (range length 32 bytes) */
+ 196:Src/main.c    ****     //DWT->COMP0 = (uint32_t)bubble_sort;                      //改为了比GPIOC
+ 197:Src/main.c    ****     DWT->COMP0 = (uint32_t)C_GPIO_GPIO_Port;                      //改为了比较GPIOC
+ 198:Src/main.c    ****     DWT->MASK0 = 8;							 //屏蔽掉数据地址的后5位，目前DWT->COMP0的值是GPIOA的地
+ 199:Src/main.c    **** 											//可能是出于加快比较速度的原因吧，那为什么不把MASK[3:0]
+ 200:Src/main.c    **** 										        //设置为8,反正0x40010800最后八位都是0
+ 201:Src/main.c    **** 										        
+ 202:Src/main.c    ****     DWT->FUNCTION0 = (2 << DWT_FUNCTION_FUNCTION_Pos)   // Report data and addr on watchpoint hit
+ 203:Src/main.c    ****                    | (1 << DWT_FUNCTION_EMITRANGE_Pos); // 这一位为1，前面那四位是0010�
+ARM GAS  /tmp/ccfBEMvJ.s 			page 5
+
+
+ 204:Src/main.c    ****                    
+ 205:Src/main.c    ****                  //    (4 << DWT_FUNCTION_FUNCTION_Pos)
+ 206:Src/main.c    ****                  //  | (1 << DWT_FUNCTION_CYCMATCH_Pos); // 这一位为1,前面那四位是0100,�
+ 207:Src/main.c    ****     
+ 208:Src/main.c    ****     /* Monitor all accesses to globalCounter (range length 4 bytes) */
+ 209:Src/main.c    ****     DWT->COMP1 = (uint32_t)&globalCounter;
+ 210:Src/main.c    ****     DWT->MASK1 = 2;
+ 211:Src/main.c    ****     DWT->FUNCTION1 = (3 << DWT_FUNCTION_FUNCTION_Pos); // Report data and PC on watchpoint hit  
+ 212:Src/main.c    **** }
+ 213:Src/main.c    **** 
+ 214:Src/main.c    **** void ITM_Print(int port, const char *p)
+ 215:Src/main.c    **** {
+ 216:Src/main.c    ****     globalCounter = 0xFC;
+ 217:Src/main.c    ****     if ((ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & (1UL << port)))
+ 218:Src/main.c    ****     {
+ 219:Src/main.c    ****         while (*p)
+ 220:Src/main.c    ****         {
+ 221:Src/main.c    ****             while (ITM->PORT[port].u32 == 0);//时间片下多进程使用一个查询函数在这�
+ 222:Src/main.c    ****             ITM->PORT[port].u8 = *p++;
+ 223:Src/main.c    ****         }   
+ 224:Src/main.c    ****     }
+ 225:Src/main.c    **** }
+ 226:Src/main.c    **** 
+ 227:Src/main.c    **** void ITM_SendValue (int port, uint32_t value)
+ 228:Src/main.c    **** {
+ 229:Src/main.c    ****     if ((ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & (1UL << port)))
+ 230:Src/main.c    ****     {
+ 231:Src/main.c    ****         while (ITM->PORT[port].u32 == 0);
+ 232:Src/main.c    ****         ITM->PORT[port].u32 = value;
+ 233:Src/main.c    ****     }
+ 234:Src/main.c    **** }
+ 235:Src/main.c    **** /* USER CODE BEGIN 0 */
+ 236:Src/main.c    **** 
+ 237:Src/main.c    **** /* USER CODE END 0 */
+ 238:Src/main.c    **** 
+ 239:Src/main.c    **** /**
+ 240:Src/main.c    ****   * @brief  The application entry point.
+ 241:Src/main.c    ****   *
+ 242:Src/main.c    ****   * @retval None
+ 243:Src/main.c    ****   */
+ 244:Src/main.c    **** int main(void)
+ 245:Src/main.c    **** {
+ 246:Src/main.c    ****   /* USER CODE BEGIN 1 */
+ 247:Src/main.c    **** 
+ 248:Src/main.c    ****   /* USER CODE END 1 */
+ 249:Src/main.c    **** 
+ 250:Src/main.c    ****   /* MCU Configuration----------------------------------------------------------*/
+ 251:Src/main.c    **** 
+ 252:Src/main.c    ****   /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+ 253:Src/main.c    ****   HAL_Init();
+ 254:Src/main.c    **** 
+ 255:Src/main.c    ****   /* USER CODE BEGIN Init */
+ 256:Src/main.c    **** 
+ 257:Src/main.c    ****   /* USER CODE END Init */
+ 258:Src/main.c    **** 
+ 259:Src/main.c    ****   /* Configure the system clock */
+ 260:Src/main.c    ****   SystemClock_Config();
+ARM GAS  /tmp/ccfBEMvJ.s 			page 6
+
+
+ 261:Src/main.c    **** 
+ 262:Src/main.c    ****   /* USER CODE BEGIN SysInit */
+ 263:Src/main.c    **** 
+ 264:Src/main.c    ****   /* USER CODE END SysInit */
+ 265:Src/main.c    **** 
+ 266:Src/main.c    ****   /* Initialize all configured peripherals */
+ 267:Src/main.c    ****   MX_GPIO_Init();
+ 268:Src/main.c    ****   MX_DMA_Init();
+ 269:Src/main.c    ****   MX_CAN_Init();
+ 270:Src/main.c    ****   MX_USART1_UART_Init();
+ 271:Src/main.c    ****   MX_USART2_UART_Init();
+ 272:Src/main.c    ****   MX_USART3_UART_Init();
+ 273:Src/main.c    **** 
+ 274:Src/main.c    ****   // 追踪初始化
+ 275:Src/main.c    ****   configure_tracing();
+ 276:Src/main.c    ****   configure_watchpoint();
+ 277:Src/main.c    ****   /* Initialize interrupts */
+ 278:Src/main.c    ****   MX_NVIC_Init();
+ 279:Src/main.c    ****   /* USER CODE BEGIN 2 */
+ 280:Src/main.c    ****   HAL_UART_Transmit(&huart3,"DMA\r\n",5,10);
+ 281:Src/main.c    ****   /*        使能串口2 IDLE中断        */
+ 282:Src/main.c    ****   __HAL_UART_ENABLE_IT(&huart2, UART_IT_IDLE);
+ 283:Src/main.c    ****   /* USER CODE END 2 */
+ 284:Src/main.c    **** 
+ 285:Src/main.c    ****   /* USER CODE BEGIN RTOS_MUTEX */
+ 286:Src/main.c    ****   /* add mutexes, ... */
+ 287:Src/main.c    ****   /* USER CODE END RTOS_MUTEX */
+ 288:Src/main.c    **** 
+ 289:Src/main.c    ****   /* USER CODE BEGIN RTOS_SEMAPHORES */
+ 290:Src/main.c    ****   /* add semaphores, ... */
+ 291:Src/main.c    ****   /* USER CODE END RTOS_SEMAPHORES */
+ 292:Src/main.c    **** 
+ 293:Src/main.c    ****   /* USER CODE BEGIN RTOS_TIMERS */
+ 294:Src/main.c    ****   /* start timers, add new ones, ... */
+ 295:Src/main.c    ****   /* USER CODE END RTOS_TIMERS */
+ 296:Src/main.c    **** 
+ 297:Src/main.c    ****   /* Create the thread(s) */
+ 298:Src/main.c    ****   /* definition and creation of Task0 */
+ 299:Src/main.c    ****   osThreadDef(Task0, Func_Task0, osPriorityNormal, 0, 256);
+ 300:Src/main.c    ****   Task0Handle = osThreadCreate(osThread(Task0), NULL);
+ 301:Src/main.c    **** 
+ 302:Src/main.c    ****   /* definition and creation of Task1 */
+ 303:Src/main.c    ****   osThreadDef(Task1, Func_Task1, osPriorityNormal, 0, 256);
+ 304:Src/main.c    ****   Task1Handle = osThreadCreate(osThread(Task1), NULL);
+ 305:Src/main.c    **** 
+ 306:Src/main.c    ****   /* USER CODE BEGIN RTOS_THREADS */
+ 307:Src/main.c    ****   /* add threads, ... */
+ 308:Src/main.c    ****   /* USER CODE END RTOS_THREADS */
+ 309:Src/main.c    **** 
+ 310:Src/main.c    ****   /* USER CODE BEGIN RTOS_QUEUES */
+ 311:Src/main.c    ****   /* add queues, ... */
+ 312:Src/main.c    ****   /* USER CODE END RTOS_QUEUES */
+ 313:Src/main.c    ****  
+ 314:Src/main.c    **** 
+ 315:Src/main.c    ****   /* Start scheduler */
+ 316:Src/main.c    ****   osKernelStart();
+ 317:Src/main.c    ****   
+ARM GAS  /tmp/ccfBEMvJ.s 			page 7
+
+
+ 318:Src/main.c    ****   /* We should never get here as control is now taken by the scheduler */
+ 319:Src/main.c    **** 
+ 320:Src/main.c    ****   /* Infinite loop */
+ 321:Src/main.c    ****   /* USER CODE BEGIN WHILE */
+ 322:Src/main.c    ****   while (1)
+ 323:Src/main.c    ****   {
+ 324:Src/main.c    **** 
+ 325:Src/main.c    ****   /* USER CODE END WHILE */
+ 326:Src/main.c    **** 
+ 327:Src/main.c    ****   /* USER CODE BEGIN 3 */
+ 328:Src/main.c    **** 
+ 329:Src/main.c    ****   }
+ 330:Src/main.c    ****   /* USER CODE END 3 */
+ 331:Src/main.c    **** 
+ 332:Src/main.c    **** }
+ 333:Src/main.c    **** 
+ 334:Src/main.c    **** /**
+ 335:Src/main.c    ****   * @brief System Clock Configuration
+ 336:Src/main.c    ****   * @retval None
+ 337:Src/main.c    ****   */
+ 338:Src/main.c    **** void SystemClock_Config(void)
+ 339:Src/main.c    **** {
+ 340:Src/main.c    **** 
+ 341:Src/main.c    ****   RCC_OscInitTypeDef RCC_OscInitStruct;
+ 342:Src/main.c    ****   RCC_ClkInitTypeDef RCC_ClkInitStruct;
+ 343:Src/main.c    **** 
+ 344:Src/main.c    ****     /**Initializes the CPU, AHB and APB busses clocks 
+ 345:Src/main.c    ****     */
+ 346:Src/main.c    ****   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
+ 347:Src/main.c    ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 348:Src/main.c    ****   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+ 349:Src/main.c    ****   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+ 350:Src/main.c    ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ 351:Src/main.c    ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 352:Src/main.c    ****   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+ 353:Src/main.c    ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 354:Src/main.c    ****   {
+ 355:Src/main.c    ****     _Error_Handler(__FILE__, __LINE__);
+ 356:Src/main.c    ****   }
+ 357:Src/main.c    **** 
+ 358:Src/main.c    ****     /**Initializes the CPU, AHB and APB busses clocks 
+ 359:Src/main.c    ****     */
+ 360:Src/main.c    ****   RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+ 361:Src/main.c    ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 362:Src/main.c    ****   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
+ 363:Src/main.c    ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 364:Src/main.c    ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+ 365:Src/main.c    ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+ 366:Src/main.c    **** 
+ 367:Src/main.c    ****   if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_2) != HAL_OK)
+ 368:Src/main.c    ****   {
+ 369:Src/main.c    ****     _Error_Handler(__FILE__, __LINE__);
+ 370:Src/main.c    ****   }
+ 371:Src/main.c    **** 
+ 372:Src/main.c    ****     /**Configure the Systick interrupt time 
+ 373:Src/main.c    ****     */
+ 374:Src/main.c    ****   HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+ARM GAS  /tmp/ccfBEMvJ.s 			page 8
+
+
+ 375:Src/main.c    **** 
+ 376:Src/main.c    ****     /**Configure the Systick 
+ 377:Src/main.c    ****     */
+ 378:Src/main.c    ****   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
+ 379:Src/main.c    **** 
+ 380:Src/main.c    ****   /* SysTick_IRQn interrupt configuration */
+ 381:Src/main.c    ****   HAL_NVIC_SetPriority(SysTick_IRQn, 15, 0);
+ 382:Src/main.c    **** }
+ 383:Src/main.c    **** 
+ 384:Src/main.c    **** /**
+ 385:Src/main.c    ****   * @brief NVIC Configuration.
+ 386:Src/main.c    ****   * @retval None
+ 387:Src/main.c    ****   */
+ 388:Src/main.c    **** static void MX_NVIC_Init(void)
+ 389:Src/main.c    **** {
+ 390:Src/main.c    ****   /* USART1_IRQn interrupt configuration */
+ 391:Src/main.c    ****   HAL_NVIC_SetPriority(USART1_IRQn, 6, 0);
+ 392:Src/main.c    ****   HAL_NVIC_EnableIRQ(USART1_IRQn);
+ 393:Src/main.c    ****   /* USART2_IRQn interrupt configuration */
+ 394:Src/main.c    ****   HAL_NVIC_SetPriority(USART2_IRQn, 5, 0);
+ 395:Src/main.c    ****   HAL_NVIC_EnableIRQ(USART2_IRQn);
+ 396:Src/main.c    ****   /* USART3_IRQn interrupt configuration */
+ 397:Src/main.c    ****   HAL_NVIC_SetPriority(USART3_IRQn, 7, 0);
+ 398:Src/main.c    ****   HAL_NVIC_EnableIRQ(USART3_IRQn);
+ 399:Src/main.c    ****   /* DMA1_Channel6_IRQn interrupt configuration */
+ 400:Src/main.c    ****   HAL_NVIC_SetPriority(DMA1_Channel6_IRQn, 5, 0);
+ 401:Src/main.c    ****   HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
+ 402:Src/main.c    **** }
+ 403:Src/main.c    **** 
+ 404:Src/main.c    **** /* CAN init function */
+ 405:Src/main.c    **** static void MX_CAN_Init(void)
+ 406:Src/main.c    **** {
+ 407:Src/main.c    **** 
+ 408:Src/main.c    ****   hcan.Instance = CAN1;
+ 409:Src/main.c    ****   hcan.Init.Prescaler = 18;
+ 410:Src/main.c    ****   hcan.Init.Mode = CAN_MODE_NORMAL;
+ 411:Src/main.c    ****   hcan.Init.SJW = CAN_SJW_1TQ;
+ 412:Src/main.c    ****   hcan.Init.BS1 = CAN_BS1_7TQ;
+ 413:Src/main.c    ****   hcan.Init.BS2 = CAN_BS2_8TQ;
+ 414:Src/main.c    ****   hcan.Init.TTCM = DISABLE;
+ 415:Src/main.c    ****   hcan.Init.ABOM = DISABLE;
+ 416:Src/main.c    ****   hcan.Init.AWUM = DISABLE;
+ 417:Src/main.c    ****   hcan.Init.NART = DISABLE;
+ 418:Src/main.c    ****   hcan.Init.RFLM = DISABLE;
+ 419:Src/main.c    ****   hcan.Init.TXFP = DISABLE;
+ 420:Src/main.c    ****   if (HAL_CAN_Init(&hcan) != HAL_OK)
+ 421:Src/main.c    ****   {
+ 422:Src/main.c    ****     _Error_Handler(__FILE__, __LINE__);
+ 423:Src/main.c    ****   }
+ 424:Src/main.c    **** 
+ 425:Src/main.c    **** }
+ 426:Src/main.c    **** 
+ 427:Src/main.c    **** /* USART1 init function */
+ 428:Src/main.c    **** static void MX_USART1_UART_Init(void)
+ 429:Src/main.c    **** {
+ 430:Src/main.c    **** 
+ 431:Src/main.c    ****   huart1.Instance = USART1;
+ARM GAS  /tmp/ccfBEMvJ.s 			page 9
+
+
+ 432:Src/main.c    ****   huart1.Init.BaudRate = 115200;
+ 433:Src/main.c    ****   huart1.Init.WordLength = UART_WORDLENGTH_8B;
+ 434:Src/main.c    ****   huart1.Init.StopBits = UART_STOPBITS_1;
+ 435:Src/main.c    ****   huart1.Init.Parity = UART_PARITY_NONE;
+ 436:Src/main.c    ****   huart1.Init.Mode = UART_MODE_TX_RX;
+ 437:Src/main.c    ****   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 438:Src/main.c    ****   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+ 439:Src/main.c    ****   if (HAL_UART_Init(&huart1) != HAL_OK)
+ 440:Src/main.c    ****   {
+ 441:Src/main.c    ****     _Error_Handler(__FILE__, __LINE__);
+ 442:Src/main.c    ****   }
+ 443:Src/main.c    **** 
+ 444:Src/main.c    **** }
+ 445:Src/main.c    **** 
+ 446:Src/main.c    **** /* USART2 init function */
+ 447:Src/main.c    **** static void MX_USART2_UART_Init(void)
+ 448:Src/main.c    **** {
+ 449:Src/main.c    **** 
+ 450:Src/main.c    ****   huart2.Instance = USART2;
+ 451:Src/main.c    ****   huart2.Init.BaudRate = 115200;
+ 452:Src/main.c    ****   huart2.Init.WordLength = UART_WORDLENGTH_8B;
+ 453:Src/main.c    ****   huart2.Init.StopBits = UART_STOPBITS_1;
+ 454:Src/main.c    ****   huart2.Init.Parity = UART_PARITY_NONE;
+ 455:Src/main.c    ****   huart2.Init.Mode = UART_MODE_TX_RX;
+ 456:Src/main.c    ****   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 457:Src/main.c    ****   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+ 458:Src/main.c    ****   if (HAL_UART_Init(&huart2) != HAL_OK)
+ 459:Src/main.c    ****   {
+ 460:Src/main.c    ****     _Error_Handler(__FILE__, __LINE__);
+ 461:Src/main.c    ****   }
+ 462:Src/main.c    **** 
+ 463:Src/main.c    **** }
+ 464:Src/main.c    **** 
+ 465:Src/main.c    **** /* USART3 init function */
+ 466:Src/main.c    **** static void MX_USART3_UART_Init(void)
+ 467:Src/main.c    **** {
+ 468:Src/main.c    **** 
+ 469:Src/main.c    ****   huart3.Instance = USART3;
+ 470:Src/main.c    ****   huart3.Init.BaudRate = 115200;
+ 471:Src/main.c    ****   huart3.Init.WordLength = UART_WORDLENGTH_8B;
+ 472:Src/main.c    ****   huart3.Init.StopBits = UART_STOPBITS_1;
+ 473:Src/main.c    ****   huart3.Init.Parity = UART_PARITY_NONE;
+ 474:Src/main.c    ****   huart3.Init.Mode = UART_MODE_TX_RX;
+ 475:Src/main.c    ****   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 476:Src/main.c    ****   huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+ 477:Src/main.c    ****   if (HAL_UART_Init(&huart3) != HAL_OK)
+ 478:Src/main.c    ****   {
+ 479:Src/main.c    ****     _Error_Handler(__FILE__, __LINE__);
+ 480:Src/main.c    ****   }
+ 481:Src/main.c    **** 
+ 482:Src/main.c    **** }
+ 483:Src/main.c    **** 
+ 484:Src/main.c    **** /** 
+ 485:Src/main.c    ****   * Enable DMA controller clock
+ 486:Src/main.c    ****   */
+ 487:Src/main.c    **** static void MX_DMA_Init(void) 
+ 488:Src/main.c    **** {
+ARM GAS  /tmp/ccfBEMvJ.s 			page 10
+
+
+  27              		.loc 1 488 0
+  28              		.cfi_startproc
+  29              		@ args = 0, pretend = 0, frame = 8
+  30              		@ frame_needed = 0, uses_anonymous_args = 0
+  31              		@ link register save eliminated.
+  32 0000 82B0     		sub	sp, sp, #8
+  33              	.LCFI0:
+  34              		.cfi_def_cfa_offset 8
+  35              	.LBB2:
+ 489:Src/main.c    ****   /* DMA controller clock enable */
+ 490:Src/main.c    ****   __HAL_RCC_DMA1_CLK_ENABLE();
+  36              		.loc 1 490 0
+  37 0002 064B     		ldr	r3, .L3
+  38 0004 5A69     		ldr	r2, [r3, #20]
+  39 0006 42F00102 		orr	r2, r2, #1
+  40 000a 5A61     		str	r2, [r3, #20]
+  41 000c 5B69     		ldr	r3, [r3, #20]
+  42 000e 03F00103 		and	r3, r3, #1
+  43 0012 0193     		str	r3, [sp, #4]
+  44 0014 019B     		ldr	r3, [sp, #4]
+  45              	.LBE2:
+ 491:Src/main.c    **** 
+ 492:Src/main.c    **** }
+  46              		.loc 1 492 0
+  47 0016 02B0     		add	sp, sp, #8
+  48              	.LCFI1:
+  49              		.cfi_def_cfa_offset 0
+  50              		@ sp needed
+  51 0018 7047     		bx	lr
+  52              	.L4:
+  53 001a 00BF     		.align	2
+  54              	.L3:
+  55 001c 00100240 		.word	1073876992
+  56              		.cfi_endproc
+  57              	.LFE80:
+  59              		.section	.text.MX_GPIO_Init,"ax",%progbits
+  60              		.align	2
+  61              		.thumb
+  62              		.thumb_func
+  64              	MX_GPIO_Init:
+  65              	.LFB81:
+ 493:Src/main.c    **** 
+ 494:Src/main.c    **** /** Configure pins as 
+ 495:Src/main.c    ****         * Analog 
+ 496:Src/main.c    ****         * Input 
+ 497:Src/main.c    ****         * Output
+ 498:Src/main.c    ****         * EVENT_OUT
+ 499:Src/main.c    ****         * EXTI
+ 500:Src/main.c    **** */
+ 501:Src/main.c    **** static void MX_GPIO_Init(void)
+ 502:Src/main.c    **** {
+  66              		.loc 1 502 0
+  67              		.cfi_startproc
+  68              		@ args = 0, pretend = 0, frame = 32
+  69              		@ frame_needed = 0, uses_anonymous_args = 0
+  70 0000 2DE9F041 		push	{r4, r5, r6, r7, r8, lr}
+  71              	.LCFI2:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 11
+
+
+  72              		.cfi_def_cfa_offset 24
+  73              		.cfi_offset 4, -24
+  74              		.cfi_offset 5, -20
+  75              		.cfi_offset 6, -16
+  76              		.cfi_offset 7, -12
+  77              		.cfi_offset 8, -8
+  78              		.cfi_offset 14, -4
+  79 0004 88B0     		sub	sp, sp, #32
+  80              	.LCFI3:
+  81              		.cfi_def_cfa_offset 56
+  82              	.LBB3:
+ 503:Src/main.c    **** 
+ 504:Src/main.c    ****   GPIO_InitTypeDef GPIO_InitStruct;
+ 505:Src/main.c    **** 
+ 506:Src/main.c    ****   /* GPIO Ports Clock Enable */
+ 507:Src/main.c    ****   __HAL_RCC_GPIOC_CLK_ENABLE();
+  83              		.loc 1 507 0
+  84 0006 214B     		ldr	r3, .L7
+  85 0008 9A69     		ldr	r2, [r3, #24]
+  86 000a 42F01002 		orr	r2, r2, #16
+  87 000e 9A61     		str	r2, [r3, #24]
+  88 0010 9A69     		ldr	r2, [r3, #24]
+  89 0012 02F01002 		and	r2, r2, #16
+  90 0016 0192     		str	r2, [sp, #4]
+  91 0018 019A     		ldr	r2, [sp, #4]
+  92              	.LBE3:
+  93              	.LBB4:
+ 508:Src/main.c    ****   __HAL_RCC_GPIOA_CLK_ENABLE();
+  94              		.loc 1 508 0
+  95 001a 9A69     		ldr	r2, [r3, #24]
+  96 001c 42F00402 		orr	r2, r2, #4
+  97 0020 9A61     		str	r2, [r3, #24]
+  98 0022 9A69     		ldr	r2, [r3, #24]
+  99 0024 02F00402 		and	r2, r2, #4
+ 100 0028 0292     		str	r2, [sp, #8]
+ 101 002a 029A     		ldr	r2, [sp, #8]
+ 102              	.LBE4:
+ 103              	.LBB5:
+ 509:Src/main.c    ****   __HAL_RCC_GPIOB_CLK_ENABLE();
+ 104              		.loc 1 509 0
+ 105 002c 9A69     		ldr	r2, [r3, #24]
+ 106 002e 42F00802 		orr	r2, r2, #8
+ 107 0032 9A61     		str	r2, [r3, #24]
+ 108 0034 9B69     		ldr	r3, [r3, #24]
+ 109 0036 03F00803 		and	r3, r3, #8
+ 110 003a 0393     		str	r3, [sp, #12]
+ 111 003c 039B     		ldr	r3, [sp, #12]
+ 112              	.LBE5:
+ 510:Src/main.c    **** 
+ 511:Src/main.c    ****   /*Configure GPIO pin Output Level */
+ 512:Src/main.c    ****   HAL_GPIO_WritePin(GPIOC, LED1_Pin|LED2_Pin|LED3_Pin, GPIO_PIN_RESET);
+ 113              		.loc 1 512 0
+ 114 003e DFF85480 		ldr	r8, .L7+8
+ 115 0042 0022     		movs	r2, #0
+ 116 0044 3821     		movs	r1, #56
+ 117 0046 4046     		mov	r0, r8
+ 118 0048 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ARM GAS  /tmp/ccfBEMvJ.s 			page 12
+
+
+ 119              	.LVL0:
+ 513:Src/main.c    **** 
+ 514:Src/main.c    ****   /*Configure GPIO pin Output Level */
+ 515:Src/main.c    ****   HAL_GPIO_WritePin(C_GPIO_GPIO_Port, C_GPIO_Pin, GPIO_PIN_RESET);
+ 120              		.loc 1 515 0
+ 121 004c 104C     		ldr	r4, .L7+4
+ 122 004e 0022     		movs	r2, #0
+ 123 0050 4FF48041 		mov	r1, #16384
+ 124 0054 2046     		mov	r0, r4
+ 125 0056 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 126              	.LVL1:
+ 516:Src/main.c    **** 
+ 517:Src/main.c    ****   /*Configure GPIO pins : LED1_Pin LED2_Pin LED3_Pin */
+ 518:Src/main.c    ****   GPIO_InitStruct.Pin = LED1_Pin|LED2_Pin|LED3_Pin;
+ 127              		.loc 1 518 0
+ 128 005a 3823     		movs	r3, #56
+ 129 005c 0493     		str	r3, [sp, #16]
+ 519:Src/main.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 130              		.loc 1 519 0
+ 131 005e 0127     		movs	r7, #1
+ 132 0060 0597     		str	r7, [sp, #20]
+ 520:Src/main.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 133              		.loc 1 520 0
+ 134 0062 0026     		movs	r6, #0
+ 135 0064 0696     		str	r6, [sp, #24]
+ 521:Src/main.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 136              		.loc 1 521 0
+ 137 0066 0225     		movs	r5, #2
+ 138 0068 0795     		str	r5, [sp, #28]
+ 522:Src/main.c    ****   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+ 139              		.loc 1 522 0
+ 140 006a 04A9     		add	r1, sp, #16
+ 141 006c 4046     		mov	r0, r8
+ 142 006e FFF7FEFF 		bl	HAL_GPIO_Init
+ 143              	.LVL2:
+ 523:Src/main.c    **** 
+ 524:Src/main.c    ****   /*Configure GPIO pin : C_GPIO_Pin */
+ 525:Src/main.c    ****   GPIO_InitStruct.Pin = C_GPIO_Pin;
+ 144              		.loc 1 525 0
+ 145 0072 4FF48043 		mov	r3, #16384
+ 146 0076 0493     		str	r3, [sp, #16]
+ 526:Src/main.c    ****   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+ 147              		.loc 1 526 0
+ 148 0078 0597     		str	r7, [sp, #20]
+ 527:Src/main.c    ****   GPIO_InitStruct.Pull = GPIO_NOPULL;
+ 149              		.loc 1 527 0
+ 150 007a 0696     		str	r6, [sp, #24]
+ 528:Src/main.c    ****   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+ 151              		.loc 1 528 0
+ 152 007c 0795     		str	r5, [sp, #28]
+ 529:Src/main.c    ****   HAL_GPIO_Init(C_GPIO_GPIO_Port, &GPIO_InitStruct);
+ 153              		.loc 1 529 0
+ 154 007e 04A9     		add	r1, sp, #16
+ 155 0080 2046     		mov	r0, r4
+ 156 0082 FFF7FEFF 		bl	HAL_GPIO_Init
+ 157              	.LVL3:
+ 530:Src/main.c    **** 
+ARM GAS  /tmp/ccfBEMvJ.s 			page 13
+
+
+ 531:Src/main.c    **** }
+ 158              		.loc 1 531 0
+ 159 0086 08B0     		add	sp, sp, #32
+ 160              	.LCFI4:
+ 161              		.cfi_def_cfa_offset 24
+ 162              		@ sp needed
+ 163 0088 BDE8F081 		pop	{r4, r5, r6, r7, r8, pc}
+ 164              	.L8:
+ 165              		.align	2
+ 166              	.L7:
+ 167 008c 00100240 		.word	1073876992
+ 168 0090 000C0140 		.word	1073810432
+ 169 0094 00100140 		.word	1073811456
+ 170              		.cfi_endproc
+ 171              	.LFE81:
+ 173              		.section	.text.MX_NVIC_Init,"ax",%progbits
+ 174              		.align	2
+ 175              		.thumb
+ 176              		.thumb_func
+ 178              	MX_NVIC_Init:
+ 179              	.LFB75:
+ 389:Src/main.c    ****   /* USART1_IRQn interrupt configuration */
+ 180              		.loc 1 389 0
+ 181              		.cfi_startproc
+ 182              		@ args = 0, pretend = 0, frame = 0
+ 183              		@ frame_needed = 0, uses_anonymous_args = 0
+ 184 0000 08B5     		push	{r3, lr}
+ 185              	.LCFI5:
+ 186              		.cfi_def_cfa_offset 8
+ 187              		.cfi_offset 3, -8
+ 188              		.cfi_offset 14, -4
+ 391:Src/main.c    ****   HAL_NVIC_EnableIRQ(USART1_IRQn);
+ 189              		.loc 1 391 0
+ 190 0002 0022     		movs	r2, #0
+ 191 0004 0621     		movs	r1, #6
+ 192 0006 2520     		movs	r0, #37
+ 193 0008 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 194              	.LVL4:
+ 392:Src/main.c    ****   /* USART2_IRQn interrupt configuration */
+ 195              		.loc 1 392 0
+ 196 000c 2520     		movs	r0, #37
+ 197 000e FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 198              	.LVL5:
+ 394:Src/main.c    ****   HAL_NVIC_EnableIRQ(USART2_IRQn);
+ 199              		.loc 1 394 0
+ 200 0012 0022     		movs	r2, #0
+ 201 0014 0521     		movs	r1, #5
+ 202 0016 2620     		movs	r0, #38
+ 203 0018 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 204              	.LVL6:
+ 395:Src/main.c    ****   /* USART3_IRQn interrupt configuration */
+ 205              		.loc 1 395 0
+ 206 001c 2620     		movs	r0, #38
+ 207 001e FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 208              	.LVL7:
+ 397:Src/main.c    ****   HAL_NVIC_EnableIRQ(USART3_IRQn);
+ 209              		.loc 1 397 0
+ARM GAS  /tmp/ccfBEMvJ.s 			page 14
+
+
+ 210 0022 0022     		movs	r2, #0
+ 211 0024 0721     		movs	r1, #7
+ 212 0026 2720     		movs	r0, #39
+ 213 0028 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 214              	.LVL8:
+ 398:Src/main.c    ****   /* DMA1_Channel6_IRQn interrupt configuration */
+ 215              		.loc 1 398 0
+ 216 002c 2720     		movs	r0, #39
+ 217 002e FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 218              	.LVL9:
+ 400:Src/main.c    ****   HAL_NVIC_EnableIRQ(DMA1_Channel6_IRQn);
+ 219              		.loc 1 400 0
+ 220 0032 0022     		movs	r2, #0
+ 221 0034 0521     		movs	r1, #5
+ 222 0036 1020     		movs	r0, #16
+ 223 0038 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 224              	.LVL10:
+ 401:Src/main.c    **** }
+ 225              		.loc 1 401 0
+ 226 003c 1020     		movs	r0, #16
+ 227 003e FFF7FEFF 		bl	HAL_NVIC_EnableIRQ
+ 228              	.LVL11:
+ 229 0042 08BD     		pop	{r3, pc}
+ 230              		.cfi_endproc
+ 231              	.LFE75:
+ 233              		.section	.text.Func_Task1,"ax",%progbits
+ 234              		.align	2
+ 235              		.global	Func_Task1
+ 236              		.thumb
+ 237              		.thumb_func
+ 239              	Func_Task1:
+ 240              	.LFB84:
+ 532:Src/main.c    **** 
+ 533:Src/main.c    **** /* USER CODE BEGIN 4 */
+ 534:Src/main.c    **** /*
+ 535:Src/main.c    **** void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+ 536:Src/main.c    **** {
+ 537:Src/main.c    ****   if(huart->Instance == USART2)
+ 538:Src/main.c    ****   {
+ 539:Src/main.c    **** 	HAL_UART_Transmit(&huart3,aRxBuffer2,1,100);	// 接收到数据马上使用串口3发送出去
+ 540:Src/main.c    ****     // aRxBuffer2_Data[aRxBuffer2_Data_Index] = aRxBuffer2[1];
+ 541:Src/main.c    ****     // aRxBuffer2_Data_Index++;
+ 542:Src/main.c    ****     // if (aRxBuffer2_Data_Index == 3)
+ 543:Src/main.c    ****     // { 
+ 544:Src/main.c    ****     //   aRxBuffer2_Data_flag = 1; 
+ 545:Src/main.c    ****     //   aRxBuffer2_Data_Index = 0;
+ 546:Src/main.c    ****     // }
+ 547:Src/main.c    **** 	HAL_UART_Receive_IT(&huart2,aRxBuffer2,1);		// 重新使能串口2接收中断
+ 548:Src/main.c    ****   }
+ 549:Src/main.c    **** }
+ 550:Src/main.c    **** */
+ 551:Src/main.c    **** 
+ 552:Src/main.c    **** void uartdamget(void)
+ 553:Src/main.c    **** {
+ 554:Src/main.c    ****   uint8_t temp[1];
+ 555:Src/main.c    ****   // uint8_t temp_before[1];
+ 556:Src/main.c    ****   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+ARM GAS  /tmp/ccfBEMvJ.s 			page 15
+
+
+ 557:Src/main.c    **** 
+ 558:Src/main.c    ****   if(recv_end_flag ==1)
+ 559:Src/main.c    ****   {
+ 560:Src/main.c    ****         globalCounter = 0x0A;    // 只报告0x0A意味是ESP8266的返回数据
+ 561:Src/main.c    **** 
+ 562:Src/main.c    ****  	for(int i=0;i<Rx_len;i++)
+ 563:Src/main.c    **** 	{
+ 564:Src/main.c    **** 	  /*打印接收到的数据*/
+ 565:Src/main.c    **** 	  sprintf(temp,"%c",ReceiveBuff[i]);
+ 566:Src/main.c    ****           HAL_UART_Transmit(&huart3,temp,1,10);
+ 567:Src/main.c    **** 
+ 568:Src/main.c    ****       // hcan.pTxMsg -> Data[0] = 0xEF;
+ 569:Src/main.c    **** 	  // hcan.pTxMsg -> Data[1] = 0xFE;    // 替换CAN的发送数据，暂时用来测试
+ 570:Src/main.c    ****       // HAL_CAN_Transmit(&hcan, 10);      // 用CAN口把数据发出去
+ 571:Src/main.c    **** 	}
+ 572:Src/main.c    **** 
+ 573:Src/main.c    ****     if (ReceiveBuff[Rx_len-1] == 'T' && ReceiveBuff[Rx_len - 2] == 'A' && ReceiveBuff[Rx_len - 3] =
+ 574:Src/main.c    ****     {
+ 575:Src/main.c    ****       globalCounter = 0x0B;    // 前面的0x0A报告了,这里的0x0B也报告,意味是客户端�
+ 576:Src/main.c    **** 
+ 577:Src/main.c    ****       HAL_UART_Transmit(&huart3,"\r\nCorrect",9,10);
+ 578:Src/main.c    ****       hcan.pTxMsg -> ExtId = 0x1314;
+ 579:Src/main.c    ****       hcan.pTxMsg -> RTR = CAN_RTR_DATA;
+ 580:Src/main.c    ****       hcan.pTxMsg -> IDE = CAN_ID_EXT;
+ 581:Src/main.c    ****       hcan.pTxMsg -> DLC = 2;
+ 582:Src/main.c    ****       hcan.pTxMsg -> Data[0] = ReceiveBuff[Rx_len - 7] - 0x30;// ASC ii数字转制数字
+ 583:Src/main.c    ****       hcan.pTxMsg -> Data[1] = ReceiveBuff[Rx_len - 6] - 0x30;    // 替换CAN的发送数据，暂
+ 584:Src/main.c    ****       HAL_CAN_Transmit(&hcan, 10);      // 用CAN口把数据发出去,还是得传两次那边才�
+ 585:Src/main.c    ****       // HAL_CAN_Transmit(&hcan, 10);
+ 586:Src/main.c    ****     }
+ 587:Src/main.c    **** 
+ 588:Src/main.c    ****     if (ReceiveBuff[Rx_len - 1] == 'P') // 9字符，8字符有效最后一字符为P,3个含有P�
+ 589:Src/main.c    ****     {
+ 590:Src/main.c    ****       globalCounter = 0x0C;    // 前面的0x0A报告了,这里的0x0C也报告,意味是客户端�
+ 591:Src/main.c    ****       HAL_UART_Transmit(&huart3,"\r\nSensorCorrect\r\n",17,10);
+ 592:Src/main.c    ****       hcan.pTxMsg -> ExtId = 0x1314;
+ 593:Src/main.c    ****       hcan.pTxMsg -> RTR = CAN_RTR_DATA;
+ 594:Src/main.c    ****       hcan.pTxMsg -> IDE = CAN_ID_EXT;
+ 595:Src/main.c    ****       hcan.pTxMsg -> DLC = 8;
+ 596:Src/main.c    ****       for (int k = 0;k < 8; k++)
+ 597:Src/main.c    ****       {
+ 598:Src/main.c    ****         hcan.pTxMsg -> Data[k] = ReceiveBuff[(Rx_len - 1) - (8 - k)];
+ 599:Src/main.c    ****       }
+ 600:Src/main.c    ****       HAL_CAN_Transmit(&hcan, 10);      // 用CAN口把数据发出去,还是得传两次那边才�
+ 601:Src/main.c    ****       // HAL_CAN_Transmit(&hcan, 10);
+ 602:Src/main.c    ****     }
+ 603:Src/main.c    **** 
+ 604:Src/main.c    **** 	HAL_UART_Transmit(&huart3,"\r\n",2,10);         
+ 605:Src/main.c    **** 	/*清空接收缓存区*/
+ 606:Src/main.c    ****     for(int i = 0; i < Rx_len ; i++)
+ 607:Src/main.c    **** 	  ReceiveBuff[i]=0;
+ 608:Src/main.c    **** 	/*接收数据长度清零*/
+ 609:Src/main.c    **** 	Rx_len=0;
+ 610:Src/main.c    **** 	recv_end_flag=0;
+ 611:Src/main.c    ****   }
+ 612:Src/main.c    ****   /*开启下一次接收*/
+ 613:Src/main.c    ****   HAL_UART_Receive_DMA(&huart2,(uint8_t*)ReceiveBuff,BUFFERSIZE);    // 注意这里一定要重新
+ARM GAS  /tmp/ccfBEMvJ.s 			page 16
+
+
+ 614:Src/main.c    **** 
+ 615:Src/main.c    ****   HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+ 616:Src/main.c    **** }
+ 617:Src/main.c    **** /* USER CODE END 4 */
+ 618:Src/main.c    **** 
+ 619:Src/main.c    **** /* Func_Task0 function */
+ 620:Src/main.c    **** void Func_Task0(void const * argument)
+ 621:Src/main.c    **** {
+ 622:Src/main.c    **** 
+ 623:Src/main.c    ****   /* USER CODE BEGIN 5 */
+ 624:Src/main.c    ****   hcan.pTxMsg = &TxMessage;    // hc.pTxMsg 按 TxMessage格式
+ 625:Src/main.c    ****   
+ 626:Src/main.c    ****   HAL_UART_Transmit(&huart1,"\r\nFunc_Task0\r\n",14,10);
+ 627:Src/main.c    ****   
+ 628:Src/main.c    ****   
+ 629:Src/main.c    ****   hcan.pTxMsg -> ExtId = 0x1314;
+ 630:Src/main.c    ****   hcan.pTxMsg -> RTR = CAN_RTR_DATA;
+ 631:Src/main.c    ****   hcan.pTxMsg -> IDE = CAN_ID_EXT;
+ 632:Src/main.c    ****   hcan.pTxMsg -> DLC = 2;
+ 633:Src/main.c    ****   hcan.pTxMsg -> Data[0] = 0xAB;
+ 634:Src/main.c    ****   hcan.pTxMsg -> Data[1] = 0xCD;
+ 635:Src/main.c    **** 
+ 636:Src/main.c    ****   // 为什么传2次那边CAN_rx才能收到
+ 637:Src/main.c    ****   HAL_CAN_Transmit(&hcan, 10);  // 注意第二个参数是timeout，与常规库函数不同
+ 638:Src/main.c    ****   // HAL_CAN_Transmit(&hcan, 10);
+ 639:Src/main.c    ****   /* Infinite loop */
+ 640:Src/main.c    ****   for(;;)
+ 641:Src/main.c    ****   {
+ 642:Src/main.c    ****     // osDelay(1000);
+ 643:Src/main.c    ****     // HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_RESET);
+ 644:Src/main.c    ****     // HAL_CAN_Transmit(&hcan, 10);
+ 645:Src/main.c    **** 
+ 646:Src/main.c    ****     // osDelay(1000);
+ 647:Src/main.c    ****     // HAL_GPIO_WritePin(LED1_GPIO_Port, LED1_Pin, GPIO_PIN_SET);
+ 648:Src/main.c    ****     // HAL_CAN_Transmit(&hcan, 10);
+ 649:Src/main.c    **** 
+ 650:Src/main.c    ****     uartdamget();
+ 651:Src/main.c    ****   }
+ 652:Src/main.c    ****   /* USER CODE END 5 */ 
+ 653:Src/main.c    **** }
+ 654:Src/main.c    **** 
+ 655:Src/main.c    **** /* Func_Task1 function */
+ 656:Src/main.c    **** void Func_Task1(void const * argument)
+ 657:Src/main.c    **** {
+ 241              		.loc 1 657 0
+ 242              		.cfi_startproc
+ 243              		@ Volatile: function does not return.
+ 244              		@ args = 0, pretend = 0, frame = 0
+ 245              		@ frame_needed = 0, uses_anonymous_args = 0
+ 246              	.LVL12:
+ 247 0000 08B5     		push	{r3, lr}
+ 248              	.LCFI6:
+ 249              		.cfi_def_cfa_offset 8
+ 250              		.cfi_offset 3, -8
+ 251              		.cfi_offset 14, -4
+ 658:Src/main.c    ****   /* USER CODE BEGIN Func_Task1 */
+ 659:Src/main.c    ****   HAL_UART_Receive_IT(&huart2,aRxBuffer2,1);
+ARM GAS  /tmp/ccfBEMvJ.s 			page 17
+
+
+ 252              		.loc 1 659 0
+ 253 0002 274C     		ldr	r4, .L14
+ 254 0004 0122     		movs	r2, #1
+ 255 0006 2749     		ldr	r1, .L14+4
+ 256 0008 2046     		mov	r0, r4
+ 257              	.LVL13:
+ 258 000a FFF7FEFF 		bl	HAL_UART_Receive_IT
+ 259              	.LVL14:
+ 660:Src/main.c    ****   HAL_UART_Transmit(&huart3,"\r\nFunc_Task1\r\n",14,10);
+ 260              		.loc 1 660 0
+ 261 000e 264D     		ldr	r5, .L14+8
+ 262 0010 0A23     		movs	r3, #10
+ 263 0012 0E22     		movs	r2, #14
+ 264 0014 2549     		ldr	r1, .L14+12
+ 265 0016 2846     		mov	r0, r5
+ 266 0018 FFF7FEFF 		bl	HAL_UART_Transmit
+ 267              	.LVL15:
+ 661:Src/main.c    ****   
+ 662:Src/main.c    ****   HAL_UART_Transmit(&huart2,"AT+CWMODE=2\r\n",13,10);
+ 268              		.loc 1 662 0
+ 269 001c 0A23     		movs	r3, #10
+ 270 001e 0D22     		movs	r2, #13
+ 271 0020 2349     		ldr	r1, .L14+16
+ 272 0022 2046     		mov	r0, r4
+ 273 0024 FFF7FEFF 		bl	HAL_UART_Transmit
+ 274              	.LVL16:
+ 663:Src/main.c    ****   osDelay(50);
+ 275              		.loc 1 663 0
+ 276 0028 3220     		movs	r0, #50
+ 277 002a FFF7FEFF 		bl	osDelay
+ 278              	.LVL17:
+ 664:Src/main.c    ****   HAL_UART_Transmit(&huart2,"AT+RST\r\n",8,10);
+ 279              		.loc 1 664 0
+ 280 002e 0A23     		movs	r3, #10
+ 281 0030 0822     		movs	r2, #8
+ 282 0032 2049     		ldr	r1, .L14+20
+ 283 0034 2046     		mov	r0, r4
+ 284 0036 FFF7FEFF 		bl	HAL_UART_Transmit
+ 285              	.LVL18:
+ 665:Src/main.c    ****   osDelay(3000);
+ 286              		.loc 1 665 0
+ 287 003a 40F6B830 		movw	r0, #3000
+ 288 003e FFF7FEFF 		bl	osDelay
+ 289              	.LVL19:
+ 666:Src/main.c    ****   HAL_UART_Transmit(&huart2,"AT+CWSAP=\"PYY_8266\",\"12345678\",6,4\r\n",36,10);
+ 290              		.loc 1 666 0
+ 291 0042 0A23     		movs	r3, #10
+ 292 0044 2422     		movs	r2, #36
+ 293 0046 1C49     		ldr	r1, .L14+24
+ 294 0048 2046     		mov	r0, r4
+ 295 004a FFF7FEFF 		bl	HAL_UART_Transmit
+ 296              	.LVL20:
+ 667:Src/main.c    ****   osDelay(50);
+ 297              		.loc 1 667 0
+ 298 004e 3220     		movs	r0, #50
+ 299 0050 FFF7FEFF 		bl	osDelay
+ 300              	.LVL21:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 18
+
+
+ 668:Src/main.c    ****   HAL_UART_Transmit(&huart2,"AT+CIPMUX=1\r\n",13,10);
+ 301              		.loc 1 668 0
+ 302 0054 0A23     		movs	r3, #10
+ 303 0056 0D22     		movs	r2, #13
+ 304 0058 1849     		ldr	r1, .L14+28
+ 305 005a 2046     		mov	r0, r4
+ 306 005c FFF7FEFF 		bl	HAL_UART_Transmit
+ 307              	.LVL22:
+ 669:Src/main.c    ****   osDelay(50);
+ 308              		.loc 1 669 0
+ 309 0060 3220     		movs	r0, #50
+ 310 0062 FFF7FEFF 		bl	osDelay
+ 311              	.LVL23:
+ 670:Src/main.c    ****   HAL_UART_Transmit(&huart2,"AT+CIPSERVER=1,333\r\n",20,10);
+ 312              		.loc 1 670 0
+ 313 0066 0A23     		movs	r3, #10
+ 314 0068 1422     		movs	r2, #20
+ 315 006a 1549     		ldr	r1, .L14+32
+ 316 006c 2046     		mov	r0, r4
+ 317 006e FFF7FEFF 		bl	HAL_UART_Transmit
+ 318              	.LVL24:
+ 671:Src/main.c    ****   osDelay(3000);
+ 319              		.loc 1 671 0
+ 320 0072 40F6B830 		movw	r0, #3000
+ 321 0076 FFF7FEFF 		bl	osDelay
+ 322              	.LVL25:
+ 672:Src/main.c    ****   HAL_UART_Transmit(&huart2,"AT+CIFSR\r\n",10,10);
+ 323              		.loc 1 672 0
+ 324 007a 0A23     		movs	r3, #10
+ 325 007c 1A46     		mov	r2, r3
+ 326 007e 1149     		ldr	r1, .L14+36
+ 327 0080 2046     		mov	r0, r4
+ 328 0082 FFF7FEFF 		bl	HAL_UART_Transmit
+ 329              	.LVL26:
+ 673:Src/main.c    ****   osDelay(50);
+ 330              		.loc 1 673 0
+ 331 0086 3220     		movs	r0, #50
+ 332 0088 FFF7FEFF 		bl	osDelay
+ 333              	.LVL27:
+ 674:Src/main.c    ****   
+ 675:Src/main.c    ****   HAL_UART_Transmit(&huart3,"\r\nFINISHED\r\n",12,10);
+ 334              		.loc 1 675 0
+ 335 008c 0A23     		movs	r3, #10
+ 336 008e 0C22     		movs	r2, #12
+ 337 0090 0D49     		ldr	r1, .L14+40
+ 338 0092 2846     		mov	r0, r5
+ 339 0094 FFF7FEFF 		bl	HAL_UART_Transmit
+ 340              	.LVL28:
+ 341              	.L12:
+ 676:Src/main.c    ****   /* Infinite loop */
+ 677:Src/main.c    ****   for(;;)
+ 678:Src/main.c    ****   {
+ 679:Src/main.c    ****     osDelay(1);
+ 342              		.loc 1 679 0 discriminator 1
+ 343 0098 0120     		movs	r0, #1
+ 344 009a FFF7FEFF 		bl	osDelay
+ 345              	.LVL29:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 19
+
+
+ 346 009e FBE7     		b	.L12
+ 347              	.L15:
+ 348              		.align	2
+ 349              	.L14:
+ 350 00a0 00000000 		.word	huart2
+ 351 00a4 00000000 		.word	aRxBuffer2
+ 352 00a8 00000000 		.word	huart3
+ 353 00ac 00000000 		.word	.LC4
+ 354 00b0 10000000 		.word	.LC5
+ 355 00b4 20000000 		.word	.LC6
+ 356 00b8 2C000000 		.word	.LC7
+ 357 00bc 54000000 		.word	.LC8
+ 358 00c0 64000000 		.word	.LC9
+ 359 00c4 7C000000 		.word	.LC10
+ 360 00c8 88000000 		.word	.LC11
+ 361              		.cfi_endproc
+ 362              	.LFE84:
+ 364              		.section	.text.configure_tracing,"ax",%progbits
+ 365              		.align	2
+ 366              		.global	configure_tracing
+ 367              		.thumb
+ 368              		.thumb_func
+ 370              	configure_tracing:
+ 371              	.LFB69:
+ 110:Src/main.c    ****     /* STM32 specific configuration to enable the TRACESWO IO pin */
+ 372              		.loc 1 110 0
+ 373              		.cfi_startproc
+ 374              		@ args = 0, pretend = 0, frame = 0
+ 375              		@ frame_needed = 0, uses_anonymous_args = 0
+ 376              		@ link register save eliminated.
+ 112:Src/main.c    ****     AFIO->MAPR |= (2 << 24); // Disable JTAG to release TRACESWO
+ 377              		.loc 1 112 0
+ 378 0000 284A     		ldr	r2, .L18
+ 379 0002 9369     		ldr	r3, [r2, #24]
+ 380 0004 43F00103 		orr	r3, r3, #1
+ 381 0008 9361     		str	r3, [r2, #24]
+ 113:Src/main.c    ****     DBGMCU->CR |= DBGMCU_CR_TRACE_IOEN; // Enable IO trace pins 
+ 382              		.loc 1 113 0
+ 383 000a A2F58832 		sub	r2, r2, #69632
+ 384 000e 5368     		ldr	r3, [r2, #4]
+ 385 0010 43F00073 		orr	r3, r3, #33554432
+ 386 0014 5360     		str	r3, [r2, #4]
+ 114:Src/main.c    ****     
+ 387              		.loc 1 114 0
+ 388 0016 244B     		ldr	r3, .L18+4
+ 389 0018 5A68     		ldr	r2, [r3, #4]
+ 390 001a 42F02002 		orr	r2, r2, #32
+ 391 001e 5A60     		str	r2, [r3, #4]
+ 116:Src/main.c    ****     // DBGMCU->CR |= 0x00000020; 
+ 392              		.loc 1 116 0
+ 393 0020 5A68     		ldr	r2, [r3, #4]
+ 119:Src/main.c    ****     {
+ 394              		.loc 1 119 0
+ 395 0022 5B68     		ldr	r3, [r3, #4]
+ 396 0024 13F0200F 		tst	r3, #32
+ 397 0028 3BD0     		beq	.L16
+ 129:Src/main.c    ****     TPI->ACPR = 8; // Trace clock = HCLK/(x+1) = 8MHz    这里HCLK是处理器时钟,这个值的�
+ARM GAS  /tmp/ccfBEMvJ.s 			page 20
+
+
+ 398              		.loc 1 129 0
+ 399 002a 204A     		ldr	r2, .L18+8
+ 400 002c D368     		ldr	r3, [r2, #12]
+ 401 002e 43F08073 		orr	r3, r3, #16777216
+ 402 0032 D360     		str	r3, [r2, #12]
+ 130:Src/main.c    ****     TPI->SPPR = 2; // Pin protocol = NRZ/USART
+ 403              		.loc 1 130 0
+ 404 0034 1E4B     		ldr	r3, .L18+12
+ 405 0036 0822     		movs	r2, #8
+ 406 0038 1A61     		str	r2, [r3, #16]
+ 131:Src/main.c    ****     
+ 407              		.loc 1 131 0
+ 408 003a 0221     		movs	r1, #2
+ 409 003c C3F8F010 		str	r1, [r3, #240]
+ 134:Src/main.c    ****     		       // TPIU packet framing enabled when bit 2 is set.
+ 410              		.loc 1 134 0
+ 411 0040 4FF48072 		mov	r2, #256
+ 412 0044 C3F80423 		str	r2, [r3, #772]
+ 140:Src/main.c    ****                                            // 0 = x32, 1 = x512  //
+ 413              		.loc 1 140 0
+ 414 0048 1A4A     		ldr	r2, .L18+16
+ 415 004a A3F57C33 		sub	r3, r3, #258048
+ 416 004e 1A60     		str	r2, [r3]
+ 153:Src/main.c    ****     ITM->TCR = (1 << ITM_TCR_TraceBusID_Pos)  // Trace bus ID for TPIU
+ 417              		.loc 1 153 0
+ 418 0050 4FF06043 		mov	r3, #-536870912
+ 419 0054 A2F16952 		sub	r2, r2, #977272832
+ 420 0058 A2F5A212 		sub	r2, r2, #1327104
+ 421 005c A2F6AC32 		subw	r2, r2, #2988
+ 422 0060 C3F8B02F 		str	r2, [r3, #4016]
+ 154:Src/main.c    ****              | (1 << ITM_TCR_DWTENA_Pos)      // Enable events from DWT
+ 423              		.loc 1 154 0
+ 424 0064 1448     		ldr	r0, .L18+20
+ 425 0066 C3F8800E 		str	r0, [r3, #3712]
+ 160:Src/main.c    **** 
+ 426              		.loc 1 160 0
+ 427 006a 4FF0FF30 		mov	r0, #-1
+ 428 006e C3F8000E 		str	r0, [r3, #3584]
+ 171:Src/main.c    ****     ETM_SetupMode();
+ 429              		.loc 1 171 0
+ 430 0072 03F58223 		add	r3, r3, #266240
+ 431 0076 C3F8B02F 		str	r2, [r3, #4016]
+ 172:Src/main.c    ****     ETM->CR = ETM_CR_ETMEN // Enable ETM output port
+ 432              		.loc 1 172 0
+ 433 007a 1A68     		ldr	r2, [r3]
+ 434 007c 42F48062 		orr	r2, r2, #1024
+ 435 0080 1A60     		str	r2, [r3]
+ 173:Src/main.c    ****             | ETM_CR_STALL_PROCESSOR // Stall processor when fifo is full
+ 436              		.loc 1 173 0
+ 437 0082 4FF41962 		mov	r2, #2448
+ 438 0086 1A60     		str	r2, [r3]
+ 177:Src/main.c    ****     ETM->TECR1 = ETM_TECR1_EXCLUDE; // Trace always enabled
+ 439              		.loc 1 177 0
+ 440 0088 C3F80012 		str	r1, [r3, #512]
+ 178:Src/main.c    ****     ETM->FFRR = ETM_FFRR_EXCLUDE; // Stalling always enabled
+ 441              		.loc 1 178 0
+ 442 008c 4FF08072 		mov	r2, #16777216
+ARM GAS  /tmp/ccfBEMvJ.s 			page 21
+
+
+ 443 0090 5A62     		str	r2, [r3, #36]
+ 179:Src/main.c    ****     ETM->FFLR = 24; // Stall when less than N bytes free in FIFO (range 1..24)
+ 444              		.loc 1 179 0
+ 445 0092 9A62     		str	r2, [r3, #40]
+ 180:Src/main.c    ****                     // Larger values mean less latency in trace, but more stalls.
+ 446              		.loc 1 180 0
+ 447 0094 1822     		movs	r2, #24
+ 448 0096 DA62     		str	r2, [r3, #44]
+ 184:Src/main.c    ****     ETM->TEEVR = 0x0000006F;
+ 449              		.loc 1 184 0
+ 450 0098 44F26F02 		movw	r2, #16495
+ 451 009c 9A60     		str	r2, [r3, #8]
+ 185:Src/main.c    ****     //ETM->TSSCR = 0x00000001;
+ 452              		.loc 1 185 0
+ 453 009e 6F22     		movs	r2, #111
+ 454 00a0 1A62     		str	r2, [r3, #32]
+ 455              	.L16:
+ 456 00a2 7047     		bx	lr
+ 457              	.L19:
+ 458              		.align	2
+ 459              	.L18:
+ 460 00a4 00100240 		.word	1073876992
+ 461 00a8 002004E0 		.word	-536600576
+ 462 00ac F0ED00E0 		.word	-536810000
+ 463 00b0 000004E0 		.word	-536608768
+ 464 00b4 011A0100 		.word	72193
+ 465 00b8 0F000100 		.word	65551
+ 466              		.cfi_endproc
+ 467              	.LFE69:
+ 469              		.section	.text.configure_watchpoint,"ax",%progbits
+ 470              		.align	2
+ 471              		.global	configure_watchpoint
+ 472              		.thumb
+ 473              		.thumb_func
+ 475              	configure_watchpoint:
+ 476              	.LFB70:
+ 191:Src/main.c    ****     /* This is an example of how to configure DWT to monitor a watchpoint.
+ 477              		.loc 1 191 0
+ 478              		.cfi_startproc
+ 479              		@ args = 0, pretend = 0, frame = 0
+ 480              		@ frame_needed = 0, uses_anonymous_args = 0
+ 481              		@ link register save eliminated.
+ 197:Src/main.c    ****     DWT->MASK0 = 8;							 //屏蔽掉数据地址的后5位，目前DWT->COMP0的值是GPIOA的地
+ 482              		.loc 1 197 0
+ 483 0000 064B     		ldr	r3, .L21
+ 484 0002 074A     		ldr	r2, .L21+4
+ 485 0004 1A62     		str	r2, [r3, #32]
+ 198:Src/main.c    **** 											//可能是出于加快比较速度的原因吧，那为什么不把MASK[3:0]
+ 486              		.loc 1 198 0
+ 487 0006 0822     		movs	r2, #8
+ 488 0008 5A62     		str	r2, [r3, #36]
+ 202:Src/main.c    ****                    | (1 << DWT_FUNCTION_EMITRANGE_Pos); // 这一位为1，前面那四位是0010�
+ 489              		.loc 1 202 0
+ 490 000a 2222     		movs	r2, #34
+ 491 000c 9A62     		str	r2, [r3, #40]
+ 209:Src/main.c    ****     DWT->MASK1 = 2;
+ 492              		.loc 1 209 0
+ARM GAS  /tmp/ccfBEMvJ.s 			page 22
+
+
+ 493 000e 054A     		ldr	r2, .L21+8
+ 494 0010 1A63     		str	r2, [r3, #48]
+ 210:Src/main.c    ****     DWT->FUNCTION1 = (3 << DWT_FUNCTION_FUNCTION_Pos); // Report data and PC on watchpoint hit  
+ 495              		.loc 1 210 0
+ 496 0012 0222     		movs	r2, #2
+ 497 0014 5A63     		str	r2, [r3, #52]
+ 211:Src/main.c    **** }
+ 498              		.loc 1 211 0
+ 499 0016 0322     		movs	r2, #3
+ 500 0018 9A63     		str	r2, [r3, #56]
+ 501 001a 7047     		bx	lr
+ 502              	.L22:
+ 503              		.align	2
+ 504              	.L21:
+ 505 001c 001000E0 		.word	-536866816
+ 506 0020 000C0140 		.word	1073810432
+ 507 0024 00000000 		.word	.LANCHOR0
+ 508              		.cfi_endproc
+ 509              	.LFE70:
+ 511              		.section	.text.ITM_Print,"ax",%progbits
+ 512              		.align	2
+ 513              		.global	ITM_Print
+ 514              		.thumb
+ 515              		.thumb_func
+ 517              	ITM_Print:
+ 518              	.LFB71:
+ 215:Src/main.c    ****     globalCounter = 0xFC;
+ 519              		.loc 1 215 0
+ 520              		.cfi_startproc
+ 521              		@ args = 0, pretend = 0, frame = 0
+ 522              		@ frame_needed = 0, uses_anonymous_args = 0
+ 523              		@ link register save eliminated.
+ 524              	.LVL30:
+ 216:Src/main.c    ****     if ((ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & (1UL << port)))
+ 525              		.loc 1 216 0
+ 526 0000 FC22     		movs	r2, #252
+ 527 0002 104B     		ldr	r3, .L27
+ 528 0004 1A60     		str	r2, [r3]
+ 217:Src/main.c    ****     {
+ 529              		.loc 1 217 0
+ 530 0006 4FF06043 		mov	r3, #-536870912
+ 531 000a D3F8803E 		ldr	r3, [r3, #3712]
+ 532 000e 13F0010F 		tst	r3, #1
+ 533 0012 16D0     		beq	.L23
+ 217:Src/main.c    ****     {
+ 534              		.loc 1 217 0 is_stmt 0 discriminator 1
+ 535 0014 4FF06043 		mov	r3, #-536870912
+ 536 0018 D3F8003E 		ldr	r3, [r3, #3584]
+ 537 001c C340     		lsrs	r3, r3, r0
+ 538 001e 13F0010F 		tst	r3, #1
+ 539 0022 0BD1     		bne	.L25
+ 540 0024 7047     		bx	lr
+ 541              	.L26:
+ 221:Src/main.c    ****             ITM->PORT[port].u8 = *p++;
+ 542              		.loc 1 221 0 is_stmt 1 discriminator 1
+ 543 0026 4FF06043 		mov	r3, #-536870912
+ 544 002a 53F82030 		ldr	r3, [r3, r0, lsl #2]
+ARM GAS  /tmp/ccfBEMvJ.s 			page 23
+
+
+ 545 002e 002B     		cmp	r3, #0
+ 546 0030 F9D0     		beq	.L26
+ 222:Src/main.c    ****         }   
+ 547              		.loc 1 222 0
+ 548 0032 0131     		adds	r1, r1, #1
+ 549              	.LVL31:
+ 550 0034 4FF06043 		mov	r3, #-536870912
+ 551 0038 03F82020 		strb	r2, [r3, r0, lsl #2]
+ 552              	.L25:
+ 219:Src/main.c    ****         {
+ 553              		.loc 1 219 0
+ 554 003c 0A78     		ldrb	r2, [r1]	@ zero_extendqisi2
+ 555 003e 002A     		cmp	r2, #0
+ 556 0040 F1D1     		bne	.L26
+ 557              	.L23:
+ 558 0042 7047     		bx	lr
+ 559              	.L28:
+ 560              		.align	2
+ 561              	.L27:
+ 562 0044 00000000 		.word	.LANCHOR0
+ 563              		.cfi_endproc
+ 564              	.LFE71:
+ 566              		.section	.text.ITM_SendValue,"ax",%progbits
+ 567              		.align	2
+ 568              		.global	ITM_SendValue
+ 569              		.thumb
+ 570              		.thumb_func
+ 572              	ITM_SendValue:
+ 573              	.LFB72:
+ 228:Src/main.c    ****     if ((ITM->TCR & ITM_TCR_ITMENA_Msk) && (ITM->TER & (1UL << port)))
+ 574              		.loc 1 228 0
+ 575              		.cfi_startproc
+ 576              		@ args = 0, pretend = 0, frame = 0
+ 577              		@ frame_needed = 0, uses_anonymous_args = 0
+ 578              		@ link register save eliminated.
+ 579              	.LVL32:
+ 229:Src/main.c    ****     {
+ 580              		.loc 1 229 0
+ 581 0000 4FF06043 		mov	r3, #-536870912
+ 582 0004 D3F8803E 		ldr	r3, [r3, #3712]
+ 583 0008 13F0010F 		tst	r3, #1
+ 584 000c 11D0     		beq	.L29
+ 229:Src/main.c    ****     {
+ 585              		.loc 1 229 0 is_stmt 0 discriminator 1
+ 586 000e 4FF06043 		mov	r3, #-536870912
+ 587 0012 D3F8003E 		ldr	r3, [r3, #3584]
+ 588 0016 C340     		lsrs	r3, r3, r0
+ 589 0018 13F0010F 		tst	r3, #1
+ 590 001c 09D0     		beq	.L29
+ 591              	.L31:
+ 231:Src/main.c    ****         ITM->PORT[port].u32 = value;
+ 592              		.loc 1 231 0 is_stmt 1 discriminator 1
+ 593 001e 4FF06043 		mov	r3, #-536870912
+ 594 0022 53F82030 		ldr	r3, [r3, r0, lsl #2]
+ 595 0026 002B     		cmp	r3, #0
+ 596 0028 F9D0     		beq	.L31
+ 232:Src/main.c    ****     }
+ARM GAS  /tmp/ccfBEMvJ.s 			page 24
+
+
+ 597              		.loc 1 232 0
+ 598 002a 4FF06043 		mov	r3, #-536870912
+ 599 002e 43F82010 		str	r1, [r3, r0, lsl #2]
+ 600              	.L29:
+ 601 0032 7047     		bx	lr
+ 602              		.cfi_endproc
+ 603              	.LFE72:
+ 605              		.section	.text.uartdamget,"ax",%progbits
+ 606              		.align	2
+ 607              		.global	uartdamget
+ 608              		.thumb
+ 609              		.thumb_func
+ 611              	uartdamget:
+ 612              	.LFB82:
+ 553:Src/main.c    ****   uint8_t temp[1];
+ 613              		.loc 1 553 0
+ 614              		.cfi_startproc
+ 615              		@ args = 0, pretend = 0, frame = 8
+ 616              		@ frame_needed = 0, uses_anonymous_args = 0
+ 617 0000 10B5     		push	{r4, lr}
+ 618              	.LCFI7:
+ 619              		.cfi_def_cfa_offset 8
+ 620              		.cfi_offset 4, -8
+ 621              		.cfi_offset 14, -4
+ 622 0002 82B0     		sub	sp, sp, #8
+ 623              	.LCFI8:
+ 624              		.cfi_def_cfa_offset 16
+ 556:Src/main.c    **** 
+ 625              		.loc 1 556 0
+ 626 0004 0022     		movs	r2, #0
+ 627 0006 0821     		movs	r1, #8
+ 628 0008 5648     		ldr	r0, .L43
+ 629 000a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 630              	.LVL33:
+ 558:Src/main.c    ****   {
+ 631              		.loc 1 558 0
+ 632 000e 564B     		ldr	r3, .L43+4
+ 633 0010 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 634 0012 012B     		cmp	r3, #1
+ 635 0014 40F09980 		bne	.L33
+ 560:Src/main.c    **** 
+ 636              		.loc 1 560 0
+ 637 0018 0A22     		movs	r2, #10
+ 638 001a 544B     		ldr	r3, .L43+8
+ 639 001c 1A60     		str	r2, [r3]
+ 640              	.LVL34:
+ 641              	.LBB6:
+ 562:Src/main.c    **** 	{
+ 642              		.loc 1 562 0
+ 643 001e 0024     		movs	r4, #0
+ 644 0020 0CE0     		b	.L34
+ 645              	.LVL35:
+ 646              	.L35:
+ 565:Src/main.c    ****           HAL_UART_Transmit(&huart3,temp,1,10);
+ 647              		.loc 1 565 0 discriminator 3
+ 648 0022 534B     		ldr	r3, .L43+12
+ 649 0024 1A5D     		ldrb	r2, [r3, r4]	@ zero_extendqisi2
+ARM GAS  /tmp/ccfBEMvJ.s 			page 25
+
+
+ 650 0026 5349     		ldr	r1, .L43+16
+ 651 0028 01A8     		add	r0, sp, #4
+ 652 002a FFF7FEFF 		bl	sprintf
+ 653              	.LVL36:
+ 566:Src/main.c    **** 
+ 654              		.loc 1 566 0 discriminator 3
+ 655 002e 0A23     		movs	r3, #10
+ 656 0030 0122     		movs	r2, #1
+ 657 0032 01A9     		add	r1, sp, #4
+ 658 0034 5048     		ldr	r0, .L43+20
+ 659 0036 FFF7FEFF 		bl	HAL_UART_Transmit
+ 660              	.LVL37:
+ 562:Src/main.c    **** 	{
+ 661              		.loc 1 562 0 discriminator 3
+ 662 003a 0134     		adds	r4, r4, #1
+ 663              	.LVL38:
+ 664              	.L34:
+ 562:Src/main.c    **** 	{
+ 665              		.loc 1 562 0 is_stmt 0 discriminator 1
+ 666 003c 4F4B     		ldr	r3, .L43+24
+ 667 003e 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 668 0040 9C42     		cmp	r4, r3
+ 669 0042 EEDB     		blt	.L35
+ 670              	.LBE6:
+ 573:Src/main.c    ****     {
+ 671              		.loc 1 573 0 is_stmt 1
+ 672 0044 5A1E     		subs	r2, r3, #1
+ 673 0046 4A49     		ldr	r1, .L43+12
+ 674 0048 8A5C     		ldrb	r2, [r1, r2]	@ zero_extendqisi2
+ 675 004a 542A     		cmp	r2, #84
+ 676 004c 36D1     		bne	.L36
+ 573:Src/main.c    ****     {
+ 677              		.loc 1 573 0 is_stmt 0 discriminator 1
+ 678 004e 9A1E     		subs	r2, r3, #2
+ 679 0050 8A5C     		ldrb	r2, [r1, r2]	@ zero_extendqisi2
+ 680 0052 412A     		cmp	r2, #65
+ 681 0054 32D1     		bne	.L36
+ 573:Src/main.c    ****     {
+ 682              		.loc 1 573 0 discriminator 2
+ 683 0056 DA1E     		subs	r2, r3, #3
+ 684 0058 8A5C     		ldrb	r2, [r1, r2]	@ zero_extendqisi2
+ 685 005a 442A     		cmp	r2, #68
+ 686 005c 2ED1     		bne	.L36
+ 573:Src/main.c    ****     {
+ 687              		.loc 1 573 0 discriminator 3
+ 688 005e 1A1F     		subs	r2, r3, #4
+ 689 0060 8A5C     		ldrb	r2, [r1, r2]	@ zero_extendqisi2
+ 690 0062 592A     		cmp	r2, #89
+ 691 0064 2AD1     		bne	.L36
+ 573:Src/main.c    ****     {
+ 692              		.loc 1 573 0 discriminator 4
+ 693 0066 053B     		subs	r3, r3, #5
+ 694 0068 CB5C     		ldrb	r3, [r1, r3]	@ zero_extendqisi2
+ 695 006a 4D2B     		cmp	r3, #77
+ 696 006c 26D1     		bne	.L36
+ 575:Src/main.c    **** 
+ 697              		.loc 1 575 0 is_stmt 1
+ARM GAS  /tmp/ccfBEMvJ.s 			page 26
+
+
+ 698 006e 0B22     		movs	r2, #11
+ 699 0070 3E4B     		ldr	r3, .L43+8
+ 700 0072 1A60     		str	r2, [r3]
+ 577:Src/main.c    ****       hcan.pTxMsg -> ExtId = 0x1314;
+ 701              		.loc 1 577 0
+ 702 0074 0A23     		movs	r3, #10
+ 703 0076 0922     		movs	r2, #9
+ 704 0078 4149     		ldr	r1, .L43+28
+ 705 007a 3F48     		ldr	r0, .L43+20
+ 706 007c FFF7FEFF 		bl	HAL_UART_Transmit
+ 707              	.LVL39:
+ 578:Src/main.c    ****       hcan.pTxMsg -> RTR = CAN_RTR_DATA;
+ 708              		.loc 1 578 0
+ 709 0080 4048     		ldr	r0, .L43+32
+ 710 0082 036B     		ldr	r3, [r0, #48]
+ 711 0084 41F21432 		movw	r2, #4884
+ 712 0088 5A60     		str	r2, [r3, #4]
+ 579:Src/main.c    ****       hcan.pTxMsg -> IDE = CAN_ID_EXT;
+ 713              		.loc 1 579 0
+ 714 008a 036B     		ldr	r3, [r0, #48]
+ 715 008c 0022     		movs	r2, #0
+ 716 008e DA60     		str	r2, [r3, #12]
+ 580:Src/main.c    ****       hcan.pTxMsg -> DLC = 2;
+ 717              		.loc 1 580 0
+ 718 0090 036B     		ldr	r3, [r0, #48]
+ 719 0092 0422     		movs	r2, #4
+ 720 0094 9A60     		str	r2, [r3, #8]
+ 581:Src/main.c    ****       hcan.pTxMsg -> Data[0] = ReceiveBuff[Rx_len - 7] - 0x30;// ASC ii数字转制数字
+ 721              		.loc 1 581 0
+ 722 0096 036B     		ldr	r3, [r0, #48]
+ 723 0098 0222     		movs	r2, #2
+ 724 009a 1A61     		str	r2, [r3, #16]
+ 582:Src/main.c    ****       hcan.pTxMsg -> Data[1] = ReceiveBuff[Rx_len - 6] - 0x30;    // 替换CAN的发送数据，暂
+ 725              		.loc 1 582 0
+ 726 009c 046B     		ldr	r4, [r0, #48]
+ 727              	.LVL40:
+ 728 009e 374B     		ldr	r3, .L43+24
+ 729 00a0 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 730 00a2 DA1F     		subs	r2, r3, #7
+ 731 00a4 3249     		ldr	r1, .L43+12
+ 732 00a6 8A5C     		ldrb	r2, [r1, r2]	@ zero_extendqisi2
+ 733 00a8 303A     		subs	r2, r2, #48
+ 734 00aa 2275     		strb	r2, [r4, #20]
+ 583:Src/main.c    ****       HAL_CAN_Transmit(&hcan, 10);      // 用CAN口把数据发出去,还是得传两次那边才�
+ 735              		.loc 1 583 0
+ 736 00ac 026B     		ldr	r2, [r0, #48]
+ 737 00ae 063B     		subs	r3, r3, #6
+ 738 00b0 CB5C     		ldrb	r3, [r1, r3]	@ zero_extendqisi2
+ 739 00b2 303B     		subs	r3, r3, #48
+ 740 00b4 5375     		strb	r3, [r2, #21]
+ 584:Src/main.c    ****       // HAL_CAN_Transmit(&hcan, 10);
+ 741              		.loc 1 584 0
+ 742 00b6 0A21     		movs	r1, #10
+ 743 00b8 FFF7FEFF 		bl	HAL_CAN_Transmit
+ 744              	.LVL41:
+ 745              	.L36:
+ 588:Src/main.c    ****     {
+ARM GAS  /tmp/ccfBEMvJ.s 			page 27
+
+
+ 746              		.loc 1 588 0
+ 747 00bc 2F4B     		ldr	r3, .L43+24
+ 748 00be 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 749 00c0 013B     		subs	r3, r3, #1
+ 750 00c2 2B4A     		ldr	r2, .L43+12
+ 751 00c4 D35C     		ldrb	r3, [r2, r3]	@ zero_extendqisi2
+ 752 00c6 502B     		cmp	r3, #80
+ 753 00c8 2AD1     		bne	.L37
+ 590:Src/main.c    ****       HAL_UART_Transmit(&huart3,"\r\nSensorCorrect\r\n",17,10);
+ 754              		.loc 1 590 0
+ 755 00ca 0C22     		movs	r2, #12
+ 756 00cc 274B     		ldr	r3, .L43+8
+ 757 00ce 1A60     		str	r2, [r3]
+ 591:Src/main.c    ****       hcan.pTxMsg -> ExtId = 0x1314;
+ 758              		.loc 1 591 0
+ 759 00d0 0A23     		movs	r3, #10
+ 760 00d2 1122     		movs	r2, #17
+ 761 00d4 2C49     		ldr	r1, .L43+36
+ 762 00d6 2848     		ldr	r0, .L43+20
+ 763 00d8 FFF7FEFF 		bl	HAL_UART_Transmit
+ 764              	.LVL42:
+ 592:Src/main.c    ****       hcan.pTxMsg -> RTR = CAN_RTR_DATA;
+ 765              		.loc 1 592 0
+ 766 00dc 294B     		ldr	r3, .L43+32
+ 767 00de 1A6B     		ldr	r2, [r3, #48]
+ 768 00e0 41F21431 		movw	r1, #4884
+ 769 00e4 5160     		str	r1, [r2, #4]
+ 593:Src/main.c    ****       hcan.pTxMsg -> IDE = CAN_ID_EXT;
+ 770              		.loc 1 593 0
+ 771 00e6 196B     		ldr	r1, [r3, #48]
+ 772 00e8 0022     		movs	r2, #0
+ 773 00ea CA60     		str	r2, [r1, #12]
+ 594:Src/main.c    ****       hcan.pTxMsg -> DLC = 8;
+ 774              		.loc 1 594 0
+ 775 00ec 196B     		ldr	r1, [r3, #48]
+ 776 00ee 0420     		movs	r0, #4
+ 777 00f0 8860     		str	r0, [r1, #8]
+ 595:Src/main.c    ****       for (int k = 0;k < 8; k++)
+ 778              		.loc 1 595 0
+ 779 00f2 1B6B     		ldr	r3, [r3, #48]
+ 780 00f4 0821     		movs	r1, #8
+ 781 00f6 1961     		str	r1, [r3, #16]
+ 782              	.LVL43:
+ 783              	.LBB7:
+ 596:Src/main.c    ****       {
+ 784              		.loc 1 596 0
+ 785 00f8 0CE0     		b	.L38
+ 786              	.LVL44:
+ 787              	.L39:
+ 598:Src/main.c    ****       }
+ 788              		.loc 1 598 0 discriminator 3
+ 789 00fa 224B     		ldr	r3, .L43+32
+ 790 00fc 196B     		ldr	r1, [r3, #48]
+ 791 00fe 1F4B     		ldr	r3, .L43+24
+ 792 0100 1B78     		ldrb	r3, [r3]	@ zero_extendqisi2
+ 793 0102 013B     		subs	r3, r3, #1
+ 794 0104 C2F10800 		rsb	r0, r2, #8
+ARM GAS  /tmp/ccfBEMvJ.s 			page 28
+
+
+ 795 0108 1B1A     		subs	r3, r3, r0
+ 796 010a 1948     		ldr	r0, .L43+12
+ 797 010c C05C     		ldrb	r0, [r0, r3]	@ zero_extendqisi2
+ 798 010e 8B18     		adds	r3, r1, r2
+ 799 0110 1875     		strb	r0, [r3, #20]
+ 596:Src/main.c    ****       {
+ 800              		.loc 1 596 0 discriminator 3
+ 801 0112 0132     		adds	r2, r2, #1
+ 802              	.LVL45:
+ 803              	.L38:
+ 596:Src/main.c    ****       {
+ 804              		.loc 1 596 0 is_stmt 0 discriminator 1
+ 805 0114 072A     		cmp	r2, #7
+ 806 0116 F0DD     		ble	.L39
+ 807              	.LBE7:
+ 600:Src/main.c    ****       // HAL_CAN_Transmit(&hcan, 10);
+ 808              		.loc 1 600 0 is_stmt 1
+ 809 0118 0A21     		movs	r1, #10
+ 810 011a 1A48     		ldr	r0, .L43+32
+ 811 011c FFF7FEFF 		bl	HAL_CAN_Transmit
+ 812              	.LVL46:
+ 813              	.L37:
+ 604:Src/main.c    **** 	/*清空接收缓存区*/
+ 814              		.loc 1 604 0
+ 815 0120 0A23     		movs	r3, #10
+ 816 0122 0222     		movs	r2, #2
+ 817 0124 1949     		ldr	r1, .L43+40
+ 818 0126 1448     		ldr	r0, .L43+20
+ 819 0128 FFF7FEFF 		bl	HAL_UART_Transmit
+ 820              	.LVL47:
+ 821              	.LBB8:
+ 606:Src/main.c    **** 	  ReceiveBuff[i]=0;
+ 822              		.loc 1 606 0
+ 823 012c 0023     		movs	r3, #0
+ 824 012e 03E0     		b	.L40
+ 825              	.LVL48:
+ 826              	.L41:
+ 607:Src/main.c    **** 	/*接收数据长度清零*/
+ 827              		.loc 1 607 0 discriminator 3
+ 828 0130 0021     		movs	r1, #0
+ 829 0132 0F4A     		ldr	r2, .L43+12
+ 830 0134 D154     		strb	r1, [r2, r3]
+ 606:Src/main.c    **** 	  ReceiveBuff[i]=0;
+ 831              		.loc 1 606 0 discriminator 3
+ 832 0136 0133     		adds	r3, r3, #1
+ 833              	.LVL49:
+ 834              	.L40:
+ 606:Src/main.c    **** 	  ReceiveBuff[i]=0;
+ 835              		.loc 1 606 0 is_stmt 0 discriminator 1
+ 836 0138 104A     		ldr	r2, .L43+24
+ 837 013a 1278     		ldrb	r2, [r2]	@ zero_extendqisi2
+ 838 013c 9342     		cmp	r3, r2
+ 839 013e F7DB     		blt	.L41
+ 840              	.LBE8:
+ 609:Src/main.c    **** 	recv_end_flag=0;
+ 841              		.loc 1 609 0 is_stmt 1
+ 842 0140 0023     		movs	r3, #0
+ARM GAS  /tmp/ccfBEMvJ.s 			page 29
+
+
+ 843              	.LVL50:
+ 844 0142 0E4A     		ldr	r2, .L43+24
+ 845 0144 1370     		strb	r3, [r2]
+ 610:Src/main.c    ****   }
+ 846              		.loc 1 610 0
+ 847 0146 084A     		ldr	r2, .L43+4
+ 848 0148 1370     		strb	r3, [r2]
+ 849              	.L33:
+ 613:Src/main.c    **** 
+ 850              		.loc 1 613 0
+ 851 014a FF22     		movs	r2, #255
+ 852 014c 0849     		ldr	r1, .L43+12
+ 853 014e 1048     		ldr	r0, .L43+44
+ 854 0150 FFF7FEFF 		bl	HAL_UART_Receive_DMA
+ 855              	.LVL51:
+ 615:Src/main.c    **** }
+ 856              		.loc 1 615 0
+ 857 0154 0122     		movs	r2, #1
+ 858 0156 0821     		movs	r1, #8
+ 859 0158 0248     		ldr	r0, .L43
+ 860 015a FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 861              	.LVL52:
+ 616:Src/main.c    **** /* USER CODE END 4 */
+ 862              		.loc 1 616 0
+ 863 015e 02B0     		add	sp, sp, #8
+ 864              	.LCFI9:
+ 865              		.cfi_def_cfa_offset 8
+ 866              		@ sp needed
+ 867 0160 10BD     		pop	{r4, pc}
+ 868              	.L44:
+ 869 0162 00BF     		.align	2
+ 870              	.L43:
+ 871 0164 00100140 		.word	1073811456
+ 872 0168 00000000 		.word	.LANCHOR1
+ 873 016c 00000000 		.word	.LANCHOR0
+ 874 0170 00000000 		.word	ReceiveBuff
+ 875 0174 98000000 		.word	.LC12
+ 876 0178 00000000 		.word	huart3
+ 877 017c 00000000 		.word	Rx_len
+ 878 0180 9C000000 		.word	.LC13
+ 879 0184 00000000 		.word	hcan
+ 880 0188 A8000000 		.word	.LC14
+ 881 018c BC000000 		.word	.LC15
+ 882 0190 00000000 		.word	huart2
+ 883              		.cfi_endproc
+ 884              	.LFE82:
+ 886              		.section	.text.Func_Task0,"ax",%progbits
+ 887              		.align	2
+ 888              		.global	Func_Task0
+ 889              		.thumb
+ 890              		.thumb_func
+ 892              	Func_Task0:
+ 893              	.LFB83:
+ 621:Src/main.c    **** 
+ 894              		.loc 1 621 0
+ 895              		.cfi_startproc
+ 896              		@ Volatile: function does not return.
+ARM GAS  /tmp/ccfBEMvJ.s 			page 30
+
+
+ 897              		@ args = 0, pretend = 0, frame = 0
+ 898              		@ frame_needed = 0, uses_anonymous_args = 0
+ 899              	.LVL53:
+ 900 0000 08B5     		push	{r3, lr}
+ 901              	.LCFI10:
+ 902              		.cfi_def_cfa_offset 8
+ 903              		.cfi_offset 3, -8
+ 904              		.cfi_offset 14, -4
+ 624:Src/main.c    ****   
+ 905              		.loc 1 624 0
+ 906 0002 114C     		ldr	r4, .L48
+ 907 0004 114B     		ldr	r3, .L48+4
+ 908 0006 2363     		str	r3, [r4, #48]
+ 626:Src/main.c    ****   
+ 909              		.loc 1 626 0
+ 910 0008 0A23     		movs	r3, #10
+ 911 000a 0E22     		movs	r2, #14
+ 912 000c 1049     		ldr	r1, .L48+8
+ 913 000e 1148     		ldr	r0, .L48+12
+ 914              	.LVL54:
+ 915 0010 FFF7FEFF 		bl	HAL_UART_Transmit
+ 916              	.LVL55:
+ 629:Src/main.c    ****   hcan.pTxMsg -> RTR = CAN_RTR_DATA;
+ 917              		.loc 1 629 0
+ 918 0014 236B     		ldr	r3, [r4, #48]
+ 919 0016 41F21432 		movw	r2, #4884
+ 920 001a 5A60     		str	r2, [r3, #4]
+ 630:Src/main.c    ****   hcan.pTxMsg -> IDE = CAN_ID_EXT;
+ 921              		.loc 1 630 0
+ 922 001c 236B     		ldr	r3, [r4, #48]
+ 923 001e 0022     		movs	r2, #0
+ 924 0020 DA60     		str	r2, [r3, #12]
+ 631:Src/main.c    ****   hcan.pTxMsg -> DLC = 2;
+ 925              		.loc 1 631 0
+ 926 0022 236B     		ldr	r3, [r4, #48]
+ 927 0024 0422     		movs	r2, #4
+ 928 0026 9A60     		str	r2, [r3, #8]
+ 632:Src/main.c    ****   hcan.pTxMsg -> Data[0] = 0xAB;
+ 929              		.loc 1 632 0
+ 930 0028 236B     		ldr	r3, [r4, #48]
+ 931 002a 0222     		movs	r2, #2
+ 932 002c 1A61     		str	r2, [r3, #16]
+ 633:Src/main.c    ****   hcan.pTxMsg -> Data[1] = 0xCD;
+ 933              		.loc 1 633 0
+ 934 002e 236B     		ldr	r3, [r4, #48]
+ 935 0030 AB22     		movs	r2, #171
+ 936 0032 1A75     		strb	r2, [r3, #20]
+ 634:Src/main.c    **** 
+ 937              		.loc 1 634 0
+ 938 0034 236B     		ldr	r3, [r4, #48]
+ 939 0036 CD22     		movs	r2, #205
+ 940 0038 5A75     		strb	r2, [r3, #21]
+ 637:Src/main.c    ****   // HAL_CAN_Transmit(&hcan, 10);
+ 941              		.loc 1 637 0
+ 942 003a 0A21     		movs	r1, #10
+ 943 003c 2046     		mov	r0, r4
+ 944 003e FFF7FEFF 		bl	HAL_CAN_Transmit
+ARM GAS  /tmp/ccfBEMvJ.s 			page 31
+
+
+ 945              	.LVL56:
+ 946              	.L46:
+ 650:Src/main.c    ****   }
+ 947              		.loc 1 650 0 discriminator 1
+ 948 0042 FFF7FEFF 		bl	uartdamget
+ 949              	.LVL57:
+ 950 0046 FCE7     		b	.L46
+ 951              	.L49:
+ 952              		.align	2
+ 953              	.L48:
+ 954 0048 00000000 		.word	hcan
+ 955 004c 00000000 		.word	TxMessage
+ 956 0050 C0000000 		.word	.LC16
+ 957 0054 00000000 		.word	huart1
+ 958              		.cfi_endproc
+ 959              	.LFE83:
+ 961              		.section	.text.HAL_TIM_PeriodElapsedCallback,"ax",%progbits
+ 962              		.align	2
+ 963              		.global	HAL_TIM_PeriodElapsedCallback
+ 964              		.thumb
+ 965              		.thumb_func
+ 967              	HAL_TIM_PeriodElapsedCallback:
+ 968              	.LFB85:
+ 680:Src/main.c    ****     // if (aRxBuffer2_Data_flag == 1)
+ 681:Src/main.c    ****     //   HAL_UART_Transmit(&huart3,aRxBuffer2_Data,4,10);
+ 682:Src/main.c    ****     // HAL_UART_Transmit(&huart3,"\r\nFunc_Task1_Loop\r\n",19,10);
+ 683:Src/main.c    ****   }
+ 684:Src/main.c    ****   /* USER CODE END Func_Task1 */
+ 685:Src/main.c    **** }
+ 686:Src/main.c    **** 
+ 687:Src/main.c    **** /**
+ 688:Src/main.c    ****   * @brief  Period elapsed callback in non blocking mode
+ 689:Src/main.c    ****   * @note   This function is called  when TIM4 interrupt took place, inside
+ 690:Src/main.c    ****   * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+ 691:Src/main.c    ****   * a global variable "uwTick" used as application time base.
+ 692:Src/main.c    ****   * @param  htim : TIM handle
+ 693:Src/main.c    ****   * @retval None
+ 694:Src/main.c    ****   */
+ 695:Src/main.c    **** void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+ 696:Src/main.c    **** {
+ 969              		.loc 1 696 0
+ 970              		.cfi_startproc
+ 971              		@ args = 0, pretend = 0, frame = 0
+ 972              		@ frame_needed = 0, uses_anonymous_args = 0
+ 973              	.LVL58:
+ 974 0000 08B5     		push	{r3, lr}
+ 975              	.LCFI11:
+ 976              		.cfi_def_cfa_offset 8
+ 977              		.cfi_offset 3, -8
+ 978              		.cfi_offset 14, -4
+ 697:Src/main.c    ****   /* USER CODE BEGIN Callback 0 */
+ 698:Src/main.c    **** 
+ 699:Src/main.c    ****   /* USER CODE END Callback 0 */
+ 700:Src/main.c    ****   if (htim->Instance == TIM4) {
+ 979              		.loc 1 700 0
+ 980 0002 0268     		ldr	r2, [r0]
+ 981 0004 0F4B     		ldr	r3, .L54
+ARM GAS  /tmp/ccfBEMvJ.s 			page 32
+
+
+ 982 0006 9A42     		cmp	r2, r3
+ 983 0008 1AD1     		bne	.L50
+ 701:Src/main.c    ****     HAL_IncTick();
+ 984              		.loc 1 701 0
+ 985 000a FFF7FEFF 		bl	HAL_IncTick
+ 986              	.LVL59:
+ 702:Src/main.c    **** 
+ 703:Src/main.c    ****     ++TickCounter;
+ 987              		.loc 1 703 0
+ 988 000e 0E4A     		ldr	r2, .L54+4
+ 989 0010 1368     		ldr	r3, [r2]
+ 990 0012 0133     		adds	r3, r3, #1
+ 991 0014 1360     		str	r3, [r2]
+ 704:Src/main.c    ****     if (TickCounter == 50)    // C_GPIO是PB14
+ 992              		.loc 1 704 0
+ 993 0016 322B     		cmp	r3, #50
+ 994 0018 05D1     		bne	.L52
+ 705:Src/main.c    ****       HAL_GPIO_WritePin(C_GPIO_GPIO_Port, C_GPIO_Pin, GPIO_PIN_RESET);  // set 0
+ 995              		.loc 1 705 0
+ 996 001a 0022     		movs	r2, #0
+ 997 001c 4FF48041 		mov	r1, #16384
+ 998 0020 0A48     		ldr	r0, .L54+8
+ 999 0022 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1000              	.LVL60:
+ 1001              	.L52:
+ 706:Src/main.c    ****     
+ 707:Src/main.c    ****     if (TickCounter == 100)
+ 1002              		.loc 1 707 0
+ 1003 0026 084B     		ldr	r3, .L54+4
+ 1004 0028 1B68     		ldr	r3, [r3]
+ 1005 002a 642B     		cmp	r3, #100
+ 1006 002c 08D1     		bne	.L50
+ 708:Src/main.c    ****     {  
+ 709:Src/main.c    ****       HAL_GPIO_WritePin(C_GPIO_GPIO_Port, C_GPIO_Pin, GPIO_PIN_SET);    // set 1
+ 1007              		.loc 1 709 0
+ 1008 002e 0122     		movs	r2, #1
+ 1009 0030 4FF48041 		mov	r1, #16384
+ 1010 0034 0548     		ldr	r0, .L54+8
+ 1011 0036 FFF7FEFF 		bl	HAL_GPIO_WritePin
+ 1012              	.LVL61:
+ 710:Src/main.c    ****       TickCounter = 0;
+ 1013              		.loc 1 710 0
+ 1014 003a 0022     		movs	r2, #0
+ 1015 003c 024B     		ldr	r3, .L54+4
+ 1016 003e 1A60     		str	r2, [r3]
+ 1017              	.L50:
+ 1018 0040 08BD     		pop	{r3, pc}
+ 1019              	.L55:
+ 1020 0042 00BF     		.align	2
+ 1021              	.L54:
+ 1022 0044 00080040 		.word	1073743872
+ 1023 0048 00000000 		.word	.LANCHOR2
+ 1024 004c 000C0140 		.word	1073810432
+ 1025              		.cfi_endproc
+ 1026              	.LFE85:
+ 1028              		.section	.text._Error_Handler,"ax",%progbits
+ 1029              		.align	2
+ARM GAS  /tmp/ccfBEMvJ.s 			page 33
+
+
+ 1030              		.global	_Error_Handler
+ 1031              		.thumb
+ 1032              		.thumb_func
+ 1034              	_Error_Handler:
+ 1035              	.LFB86:
+ 711:Src/main.c    ****     }
+ 712:Src/main.c    ****   }
+ 713:Src/main.c    ****   /* USER CODE BEGIN Callback 1 */
+ 714:Src/main.c    **** 
+ 715:Src/main.c    ****   /* USER CODE END Callback 1 */
+ 716:Src/main.c    **** }
+ 717:Src/main.c    **** 
+ 718:Src/main.c    **** /**
+ 719:Src/main.c    ****   * @brief  This function is executed in case of error occurrence.
+ 720:Src/main.c    ****   * @param  file: The file name as string.
+ 721:Src/main.c    ****   * @param  line: The line in file as a number.
+ 722:Src/main.c    ****   * @retval None
+ 723:Src/main.c    ****   */
+ 724:Src/main.c    **** void _Error_Handler(char *file, int line)
+ 725:Src/main.c    **** {
+ 1036              		.loc 1 725 0
+ 1037              		.cfi_startproc
+ 1038              		@ Volatile: function does not return.
+ 1039              		@ args = 0, pretend = 0, frame = 0
+ 1040              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1041              		@ link register save eliminated.
+ 1042              	.LVL62:
+ 1043              	.L57:
+ 1044 0000 FEE7     		b	.L57
+ 1045              		.cfi_endproc
+ 1046              	.LFE86:
+ 1048 0002 00BF     		.section	.text.MX_CAN_Init,"ax",%progbits
+ 1049              		.align	2
+ 1050              		.thumb
+ 1051              		.thumb_func
+ 1053              	MX_CAN_Init:
+ 1054              	.LFB76:
+ 406:Src/main.c    **** 
+ 1055              		.loc 1 406 0
+ 1056              		.cfi_startproc
+ 1057              		@ args = 0, pretend = 0, frame = 0
+ 1058              		@ frame_needed = 0, uses_anonymous_args = 0
+ 406:Src/main.c    **** 
+ 1059              		.loc 1 406 0
+ 1060 0000 08B5     		push	{r3, lr}
+ 1061              	.LCFI12:
+ 1062              		.cfi_def_cfa_offset 8
+ 1063              		.cfi_offset 3, -8
+ 1064              		.cfi_offset 14, -4
+ 408:Src/main.c    ****   hcan.Init.Prescaler = 18;
+ 1065              		.loc 1 408 0
+ 1066 0002 0E48     		ldr	r0, .L61
+ 1067 0004 0E4B     		ldr	r3, .L61+4
+ 1068 0006 0360     		str	r3, [r0]
+ 409:Src/main.c    ****   hcan.Init.Mode = CAN_MODE_NORMAL;
+ 1069              		.loc 1 409 0
+ 1070 0008 1223     		movs	r3, #18
+ARM GAS  /tmp/ccfBEMvJ.s 			page 34
+
+
+ 1071 000a 4360     		str	r3, [r0, #4]
+ 410:Src/main.c    ****   hcan.Init.SJW = CAN_SJW_1TQ;
+ 1072              		.loc 1 410 0
+ 1073 000c 0023     		movs	r3, #0
+ 1074 000e 8360     		str	r3, [r0, #8]
+ 411:Src/main.c    ****   hcan.Init.BS1 = CAN_BS1_7TQ;
+ 1075              		.loc 1 411 0
+ 1076 0010 C360     		str	r3, [r0, #12]
+ 412:Src/main.c    ****   hcan.Init.BS2 = CAN_BS2_8TQ;
+ 1077              		.loc 1 412 0
+ 1078 0012 4FF4C022 		mov	r2, #393216
+ 1079 0016 0261     		str	r2, [r0, #16]
+ 413:Src/main.c    ****   hcan.Init.TTCM = DISABLE;
+ 1080              		.loc 1 413 0
+ 1081 0018 4FF4E002 		mov	r2, #7340032
+ 1082 001c 4261     		str	r2, [r0, #20]
+ 414:Src/main.c    ****   hcan.Init.ABOM = DISABLE;
+ 1083              		.loc 1 414 0
+ 1084 001e 8361     		str	r3, [r0, #24]
+ 415:Src/main.c    ****   hcan.Init.AWUM = DISABLE;
+ 1085              		.loc 1 415 0
+ 1086 0020 C361     		str	r3, [r0, #28]
+ 416:Src/main.c    ****   hcan.Init.NART = DISABLE;
+ 1087              		.loc 1 416 0
+ 1088 0022 0362     		str	r3, [r0, #32]
+ 417:Src/main.c    ****   hcan.Init.RFLM = DISABLE;
+ 1089              		.loc 1 417 0
+ 1090 0024 4362     		str	r3, [r0, #36]
+ 418:Src/main.c    ****   hcan.Init.TXFP = DISABLE;
+ 1091              		.loc 1 418 0
+ 1092 0026 8362     		str	r3, [r0, #40]
+ 419:Src/main.c    ****   if (HAL_CAN_Init(&hcan) != HAL_OK)
+ 1093              		.loc 1 419 0
+ 1094 0028 C362     		str	r3, [r0, #44]
+ 420:Src/main.c    ****   {
+ 1095              		.loc 1 420 0
+ 1096 002a FFF7FEFF 		bl	HAL_CAN_Init
+ 1097              	.LVL63:
+ 1098 002e 20B1     		cbz	r0, .L58
+ 422:Src/main.c    ****   }
+ 1099              		.loc 1 422 0
+ 1100 0030 4FF4D371 		mov	r1, #422
+ 1101 0034 0348     		ldr	r0, .L61+8
+ 1102 0036 FFF7FEFF 		bl	_Error_Handler
+ 1103              	.LVL64:
+ 1104              	.L58:
+ 1105 003a 08BD     		pop	{r3, pc}
+ 1106              	.L62:
+ 1107              		.align	2
+ 1108              	.L61:
+ 1109 003c 00000000 		.word	hcan
+ 1110 0040 00640040 		.word	1073767424
+ 1111 0044 D0000000 		.word	.LC17
+ 1112              		.cfi_endproc
+ 1113              	.LFE76:
+ 1115              		.section	.text.MX_USART1_UART_Init,"ax",%progbits
+ 1116              		.align	2
+ARM GAS  /tmp/ccfBEMvJ.s 			page 35
+
+
+ 1117              		.thumb
+ 1118              		.thumb_func
+ 1120              	MX_USART1_UART_Init:
+ 1121              	.LFB77:
+ 429:Src/main.c    **** 
+ 1122              		.loc 1 429 0
+ 1123              		.cfi_startproc
+ 1124              		@ args = 0, pretend = 0, frame = 0
+ 1125              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1126 0000 08B5     		push	{r3, lr}
+ 1127              	.LCFI13:
+ 1128              		.cfi_def_cfa_offset 8
+ 1129              		.cfi_offset 3, -8
+ 1130              		.cfi_offset 14, -4
+ 431:Src/main.c    ****   huart1.Init.BaudRate = 115200;
+ 1131              		.loc 1 431 0
+ 1132 0002 0B48     		ldr	r0, .L66
+ 1133 0004 0B4B     		ldr	r3, .L66+4
+ 1134 0006 0360     		str	r3, [r0]
+ 432:Src/main.c    ****   huart1.Init.WordLength = UART_WORDLENGTH_8B;
+ 1135              		.loc 1 432 0
+ 1136 0008 4FF4E133 		mov	r3, #115200
+ 1137 000c 4360     		str	r3, [r0, #4]
+ 433:Src/main.c    ****   huart1.Init.StopBits = UART_STOPBITS_1;
+ 1138              		.loc 1 433 0
+ 1139 000e 0023     		movs	r3, #0
+ 1140 0010 8360     		str	r3, [r0, #8]
+ 434:Src/main.c    ****   huart1.Init.Parity = UART_PARITY_NONE;
+ 1141              		.loc 1 434 0
+ 1142 0012 C360     		str	r3, [r0, #12]
+ 435:Src/main.c    ****   huart1.Init.Mode = UART_MODE_TX_RX;
+ 1143              		.loc 1 435 0
+ 1144 0014 0361     		str	r3, [r0, #16]
+ 436:Src/main.c    ****   huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 1145              		.loc 1 436 0
+ 1146 0016 0C22     		movs	r2, #12
+ 1147 0018 4261     		str	r2, [r0, #20]
+ 437:Src/main.c    ****   huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+ 1148              		.loc 1 437 0
+ 1149 001a 8361     		str	r3, [r0, #24]
+ 438:Src/main.c    ****   if (HAL_UART_Init(&huart1) != HAL_OK)
+ 1150              		.loc 1 438 0
+ 1151 001c C361     		str	r3, [r0, #28]
+ 439:Src/main.c    ****   {
+ 1152              		.loc 1 439 0
+ 1153 001e FFF7FEFF 		bl	HAL_UART_Init
+ 1154              	.LVL65:
+ 1155 0022 20B1     		cbz	r0, .L63
+ 441:Src/main.c    ****   }
+ 1156              		.loc 1 441 0
+ 1157 0024 40F2B911 		movw	r1, #441
+ 1158 0028 0348     		ldr	r0, .L66+8
+ 1159 002a FFF7FEFF 		bl	_Error_Handler
+ 1160              	.LVL66:
+ 1161              	.L63:
+ 1162 002e 08BD     		pop	{r3, pc}
+ 1163              	.L67:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 36
+
+
+ 1164              		.align	2
+ 1165              	.L66:
+ 1166 0030 00000000 		.word	huart1
+ 1167 0034 00380140 		.word	1073821696
+ 1168 0038 D0000000 		.word	.LC17
+ 1169              		.cfi_endproc
+ 1170              	.LFE77:
+ 1172              		.section	.text.MX_USART2_UART_Init,"ax",%progbits
+ 1173              		.align	2
+ 1174              		.thumb
+ 1175              		.thumb_func
+ 1177              	MX_USART2_UART_Init:
+ 1178              	.LFB78:
+ 448:Src/main.c    **** 
+ 1179              		.loc 1 448 0
+ 1180              		.cfi_startproc
+ 1181              		@ args = 0, pretend = 0, frame = 0
+ 1182              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1183 0000 08B5     		push	{r3, lr}
+ 1184              	.LCFI14:
+ 1185              		.cfi_def_cfa_offset 8
+ 1186              		.cfi_offset 3, -8
+ 1187              		.cfi_offset 14, -4
+ 450:Src/main.c    ****   huart2.Init.BaudRate = 115200;
+ 1188              		.loc 1 450 0
+ 1189 0002 0B48     		ldr	r0, .L71
+ 1190 0004 0B4B     		ldr	r3, .L71+4
+ 1191 0006 0360     		str	r3, [r0]
+ 451:Src/main.c    ****   huart2.Init.WordLength = UART_WORDLENGTH_8B;
+ 1192              		.loc 1 451 0
+ 1193 0008 4FF4E133 		mov	r3, #115200
+ 1194 000c 4360     		str	r3, [r0, #4]
+ 452:Src/main.c    ****   huart2.Init.StopBits = UART_STOPBITS_1;
+ 1195              		.loc 1 452 0
+ 1196 000e 0023     		movs	r3, #0
+ 1197 0010 8360     		str	r3, [r0, #8]
+ 453:Src/main.c    ****   huart2.Init.Parity = UART_PARITY_NONE;
+ 1198              		.loc 1 453 0
+ 1199 0012 C360     		str	r3, [r0, #12]
+ 454:Src/main.c    ****   huart2.Init.Mode = UART_MODE_TX_RX;
+ 1200              		.loc 1 454 0
+ 1201 0014 0361     		str	r3, [r0, #16]
+ 455:Src/main.c    ****   huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 1202              		.loc 1 455 0
+ 1203 0016 0C22     		movs	r2, #12
+ 1204 0018 4261     		str	r2, [r0, #20]
+ 456:Src/main.c    ****   huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+ 1205              		.loc 1 456 0
+ 1206 001a 8361     		str	r3, [r0, #24]
+ 457:Src/main.c    ****   if (HAL_UART_Init(&huart2) != HAL_OK)
+ 1207              		.loc 1 457 0
+ 1208 001c C361     		str	r3, [r0, #28]
+ 458:Src/main.c    ****   {
+ 1209              		.loc 1 458 0
+ 1210 001e FFF7FEFF 		bl	HAL_UART_Init
+ 1211              	.LVL67:
+ 1212 0022 20B1     		cbz	r0, .L68
+ARM GAS  /tmp/ccfBEMvJ.s 			page 37
+
+
+ 460:Src/main.c    ****   }
+ 1213              		.loc 1 460 0
+ 1214 0024 4FF4E671 		mov	r1, #460
+ 1215 0028 0348     		ldr	r0, .L71+8
+ 1216 002a FFF7FEFF 		bl	_Error_Handler
+ 1217              	.LVL68:
+ 1218              	.L68:
+ 1219 002e 08BD     		pop	{r3, pc}
+ 1220              	.L72:
+ 1221              		.align	2
+ 1222              	.L71:
+ 1223 0030 00000000 		.word	huart2
+ 1224 0034 00440040 		.word	1073759232
+ 1225 0038 D0000000 		.word	.LC17
+ 1226              		.cfi_endproc
+ 1227              	.LFE78:
+ 1229              		.section	.text.MX_USART3_UART_Init,"ax",%progbits
+ 1230              		.align	2
+ 1231              		.thumb
+ 1232              		.thumb_func
+ 1234              	MX_USART3_UART_Init:
+ 1235              	.LFB79:
+ 467:Src/main.c    **** 
+ 1236              		.loc 1 467 0
+ 1237              		.cfi_startproc
+ 1238              		@ args = 0, pretend = 0, frame = 0
+ 1239              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1240 0000 08B5     		push	{r3, lr}
+ 1241              	.LCFI15:
+ 1242              		.cfi_def_cfa_offset 8
+ 1243              		.cfi_offset 3, -8
+ 1244              		.cfi_offset 14, -4
+ 469:Src/main.c    ****   huart3.Init.BaudRate = 115200;
+ 1245              		.loc 1 469 0
+ 1246 0002 0B48     		ldr	r0, .L76
+ 1247 0004 0B4B     		ldr	r3, .L76+4
+ 1248 0006 0360     		str	r3, [r0]
+ 470:Src/main.c    ****   huart3.Init.WordLength = UART_WORDLENGTH_8B;
+ 1249              		.loc 1 470 0
+ 1250 0008 4FF4E133 		mov	r3, #115200
+ 1251 000c 4360     		str	r3, [r0, #4]
+ 471:Src/main.c    ****   huart3.Init.StopBits = UART_STOPBITS_1;
+ 1252              		.loc 1 471 0
+ 1253 000e 0023     		movs	r3, #0
+ 1254 0010 8360     		str	r3, [r0, #8]
+ 472:Src/main.c    ****   huart3.Init.Parity = UART_PARITY_NONE;
+ 1255              		.loc 1 472 0
+ 1256 0012 C360     		str	r3, [r0, #12]
+ 473:Src/main.c    ****   huart3.Init.Mode = UART_MODE_TX_RX;
+ 1257              		.loc 1 473 0
+ 1258 0014 0361     		str	r3, [r0, #16]
+ 474:Src/main.c    ****   huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+ 1259              		.loc 1 474 0
+ 1260 0016 0C22     		movs	r2, #12
+ 1261 0018 4261     		str	r2, [r0, #20]
+ 475:Src/main.c    ****   huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+ 1262              		.loc 1 475 0
+ARM GAS  /tmp/ccfBEMvJ.s 			page 38
+
+
+ 1263 001a 8361     		str	r3, [r0, #24]
+ 476:Src/main.c    ****   if (HAL_UART_Init(&huart3) != HAL_OK)
+ 1264              		.loc 1 476 0
+ 1265 001c C361     		str	r3, [r0, #28]
+ 477:Src/main.c    ****   {
+ 1266              		.loc 1 477 0
+ 1267 001e FFF7FEFF 		bl	HAL_UART_Init
+ 1268              	.LVL69:
+ 1269 0022 20B1     		cbz	r0, .L73
+ 479:Src/main.c    ****   }
+ 1270              		.loc 1 479 0
+ 1271 0024 40F2DF11 		movw	r1, #479
+ 1272 0028 0348     		ldr	r0, .L76+8
+ 1273 002a FFF7FEFF 		bl	_Error_Handler
+ 1274              	.LVL70:
+ 1275              	.L73:
+ 1276 002e 08BD     		pop	{r3, pc}
+ 1277              	.L77:
+ 1278              		.align	2
+ 1279              	.L76:
+ 1280 0030 00000000 		.word	huart3
+ 1281 0034 00480040 		.word	1073760256
+ 1282 0038 D0000000 		.word	.LC17
+ 1283              		.cfi_endproc
+ 1284              	.LFE79:
+ 1286              		.section	.text.SystemClock_Config,"ax",%progbits
+ 1287              		.align	2
+ 1288              		.global	SystemClock_Config
+ 1289              		.thumb
+ 1290              		.thumb_func
+ 1292              	SystemClock_Config:
+ 1293              	.LFB74:
+ 339:Src/main.c    **** 
+ 1294              		.loc 1 339 0
+ 1295              		.cfi_startproc
+ 1296              		@ args = 0, pretend = 0, frame = 64
+ 1297              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1298 0000 00B5     		push	{lr}
+ 1299              	.LCFI16:
+ 1300              		.cfi_def_cfa_offset 4
+ 1301              		.cfi_offset 14, -4
+ 1302 0002 91B0     		sub	sp, sp, #68
+ 1303              	.LCFI17:
+ 1304              		.cfi_def_cfa_offset 72
+ 346:Src/main.c    ****   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
+ 1305              		.loc 1 346 0
+ 1306 0004 0122     		movs	r2, #1
+ 1307 0006 0692     		str	r2, [sp, #24]
+ 347:Src/main.c    ****   RCC_OscInitStruct.HSEPredivValue = RCC_HSE_PREDIV_DIV1;
+ 1308              		.loc 1 347 0
+ 1309 0008 4FF48033 		mov	r3, #65536
+ 1310 000c 0793     		str	r3, [sp, #28]
+ 348:Src/main.c    ****   RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+ 1311              		.loc 1 348 0
+ 1312 000e 0021     		movs	r1, #0
+ 1313 0010 0891     		str	r1, [sp, #32]
+ 349:Src/main.c    ****   RCC_OscInitStruct.PLL.PLLState = RCC_PLL_ON;
+ARM GAS  /tmp/ccfBEMvJ.s 			page 39
+
+
+ 1314              		.loc 1 349 0
+ 1315 0012 0A92     		str	r2, [sp, #40]
+ 350:Src/main.c    ****   RCC_OscInitStruct.PLL.PLLSource = RCC_PLLSOURCE_HSE;
+ 1316              		.loc 1 350 0
+ 1317 0014 0222     		movs	r2, #2
+ 1318 0016 0D92     		str	r2, [sp, #52]
+ 351:Src/main.c    ****   RCC_OscInitStruct.PLL.PLLMUL = RCC_PLL_MUL9;
+ 1319              		.loc 1 351 0
+ 1320 0018 0E93     		str	r3, [sp, #56]
+ 352:Src/main.c    ****   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+ 1321              		.loc 1 352 0
+ 1322 001a 4FF4E013 		mov	r3, #1835008
+ 1323 001e 0F93     		str	r3, [sp, #60]
+ 353:Src/main.c    ****   {
+ 1324              		.loc 1 353 0
+ 1325 0020 06A8     		add	r0, sp, #24
+ 1326 0022 FFF7FEFF 		bl	HAL_RCC_OscConfig
+ 1327              	.LVL71:
+ 1328 0026 20B1     		cbz	r0, .L79
+ 355:Src/main.c    ****   }
+ 1329              		.loc 1 355 0
+ 1330 0028 40F26311 		movw	r1, #355
+ 1331 002c 1448     		ldr	r0, .L82
+ 1332 002e FFF7FEFF 		bl	_Error_Handler
+ 1333              	.LVL72:
+ 1334              	.L79:
+ 360:Src/main.c    ****                               |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+ 1335              		.loc 1 360 0
+ 1336 0032 0F23     		movs	r3, #15
+ 1337 0034 0193     		str	r3, [sp, #4]
+ 362:Src/main.c    ****   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+ 1338              		.loc 1 362 0
+ 1339 0036 0221     		movs	r1, #2
+ 1340 0038 0291     		str	r1, [sp, #8]
+ 363:Src/main.c    ****   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV2;
+ 1341              		.loc 1 363 0
+ 1342 003a 0023     		movs	r3, #0
+ 1343 003c 0393     		str	r3, [sp, #12]
+ 364:Src/main.c    ****   RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+ 1344              		.loc 1 364 0
+ 1345 003e 4FF48062 		mov	r2, #1024
+ 1346 0042 0492     		str	r2, [sp, #16]
+ 365:Src/main.c    **** 
+ 1347              		.loc 1 365 0
+ 1348 0044 0593     		str	r3, [sp, #20]
+ 367:Src/main.c    ****   {
+ 1349              		.loc 1 367 0
+ 1350 0046 01A8     		add	r0, sp, #4
+ 1351 0048 FFF7FEFF 		bl	HAL_RCC_ClockConfig
+ 1352              	.LVL73:
+ 1353 004c 20B1     		cbz	r0, .L80
+ 369:Src/main.c    ****   }
+ 1354              		.loc 1 369 0
+ 1355 004e 40F27111 		movw	r1, #369
+ 1356 0052 0B48     		ldr	r0, .L82
+ 1357 0054 FFF7FEFF 		bl	_Error_Handler
+ 1358              	.LVL74:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 40
+
+
+ 1359              	.L80:
+ 374:Src/main.c    **** 
+ 1360              		.loc 1 374 0
+ 1361 0058 FFF7FEFF 		bl	HAL_RCC_GetHCLKFreq
+ 1362              	.LVL75:
+ 1363 005c 094B     		ldr	r3, .L82+4
+ 1364 005e A3FB0030 		umull	r3, r0, r3, r0
+ 1365 0062 8009     		lsrs	r0, r0, #6
+ 1366 0064 FFF7FEFF 		bl	HAL_SYSTICK_Config
+ 1367              	.LVL76:
+ 378:Src/main.c    **** 
+ 1368              		.loc 1 378 0
+ 1369 0068 0420     		movs	r0, #4
+ 1370 006a FFF7FEFF 		bl	HAL_SYSTICK_CLKSourceConfig
+ 1371              	.LVL77:
+ 381:Src/main.c    **** }
+ 1372              		.loc 1 381 0
+ 1373 006e 0022     		movs	r2, #0
+ 1374 0070 0F21     		movs	r1, #15
+ 1375 0072 4FF0FF30 		mov	r0, #-1
+ 1376 0076 FFF7FEFF 		bl	HAL_NVIC_SetPriority
+ 1377              	.LVL78:
+ 382:Src/main.c    **** 
+ 1378              		.loc 1 382 0
+ 1379 007a 11B0     		add	sp, sp, #68
+ 1380              	.LCFI18:
+ 1381              		.cfi_def_cfa_offset 4
+ 1382              		@ sp needed
+ 1383 007c 5DF804FB 		ldr	pc, [sp], #4
+ 1384              	.L83:
+ 1385              		.align	2
+ 1386              	.L82:
+ 1387 0080 D0000000 		.word	.LC17
+ 1388 0084 D34D6210 		.word	274877907
+ 1389              		.cfi_endproc
+ 1390              	.LFE74:
+ 1392              		.section	.text.main,"ax",%progbits
+ 1393              		.align	2
+ 1394              		.global	main
+ 1395              		.thumb
+ 1396              		.thumb_func
+ 1398              	main:
+ 1399              	.LFB73:
+ 245:Src/main.c    ****   /* USER CODE BEGIN 1 */
+ 1400              		.loc 1 245 0
+ 1401              		.cfi_startproc
+ 1402              		@ args = 0, pretend = 0, frame = 40
+ 1403              		@ frame_needed = 0, uses_anonymous_args = 0
+ 1404 0000 70B5     		push	{r4, r5, r6, lr}
+ 1405              	.LCFI19:
+ 1406              		.cfi_def_cfa_offset 16
+ 1407              		.cfi_offset 4, -16
+ 1408              		.cfi_offset 5, -12
+ 1409              		.cfi_offset 6, -8
+ 1410              		.cfi_offset 14, -4
+ 1411 0002 8AB0     		sub	sp, sp, #40
+ 1412              	.LCFI20:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 41
+
+
+ 1413              		.cfi_def_cfa_offset 56
+ 253:Src/main.c    **** 
+ 1414              		.loc 1 253 0
+ 1415 0004 FFF7FEFF 		bl	HAL_Init
+ 1416              	.LVL79:
+ 260:Src/main.c    **** 
+ 1417              		.loc 1 260 0
+ 1418 0008 FFF7FEFF 		bl	SystemClock_Config
+ 1419              	.LVL80:
+ 267:Src/main.c    ****   MX_DMA_Init();
+ 1420              		.loc 1 267 0
+ 1421 000c FFF7FEFF 		bl	MX_GPIO_Init
+ 1422              	.LVL81:
+ 268:Src/main.c    ****   MX_CAN_Init();
+ 1423              		.loc 1 268 0
+ 1424 0010 FFF7FEFF 		bl	MX_DMA_Init
+ 1425              	.LVL82:
+ 269:Src/main.c    ****   MX_USART1_UART_Init();
+ 1426              		.loc 1 269 0
+ 1427 0014 FFF7FEFF 		bl	MX_CAN_Init
+ 1428              	.LVL83:
+ 270:Src/main.c    ****   MX_USART2_UART_Init();
+ 1429              		.loc 1 270 0
+ 1430 0018 FFF7FEFF 		bl	MX_USART1_UART_Init
+ 1431              	.LVL84:
+ 271:Src/main.c    ****   MX_USART3_UART_Init();
+ 1432              		.loc 1 271 0
+ 1433 001c FFF7FEFF 		bl	MX_USART2_UART_Init
+ 1434              	.LVL85:
+ 272:Src/main.c    **** 
+ 1435              		.loc 1 272 0
+ 1436 0020 FFF7FEFF 		bl	MX_USART3_UART_Init
+ 1437              	.LVL86:
+ 275:Src/main.c    ****   configure_watchpoint();
+ 1438              		.loc 1 275 0
+ 1439 0024 FFF7FEFF 		bl	configure_tracing
+ 1440              	.LVL87:
+ 276:Src/main.c    ****   /* Initialize interrupts */
+ 1441              		.loc 1 276 0
+ 1442 0028 FFF7FEFF 		bl	configure_watchpoint
+ 1443              	.LVL88:
+ 278:Src/main.c    ****   /* USER CODE BEGIN 2 */
+ 1444              		.loc 1 278 0
+ 1445 002c FFF7FEFF 		bl	MX_NVIC_Init
+ 1446              	.LVL89:
+ 280:Src/main.c    ****   /*        使能串口2 IDLE中断        */
+ 1447              		.loc 1 280 0
+ 1448 0030 0A23     		movs	r3, #10
+ 1449 0032 0522     		movs	r2, #5
+ 1450 0034 1249     		ldr	r1, .L87
+ 1451 0036 1348     		ldr	r0, .L87+4
+ 1452 0038 FFF7FEFF 		bl	HAL_UART_Transmit
+ 1453              	.LVL90:
+ 282:Src/main.c    ****   /* USER CODE END 2 */
+ 1454              		.loc 1 282 0
+ 1455 003c 124B     		ldr	r3, .L87+8
+ 1456 003e 1A68     		ldr	r2, [r3]
+ARM GAS  /tmp/ccfBEMvJ.s 			page 42
+
+
+ 1457 0040 D368     		ldr	r3, [r2, #12]
+ 1458 0042 43F01003 		orr	r3, r3, #16
+ 1459 0046 D360     		str	r3, [r2, #12]
+ 299:Src/main.c    ****   Task0Handle = osThreadCreate(osThread(Task0), NULL);
+ 1460              		.loc 1 299 0
+ 1461 0048 104C     		ldr	r4, .L87+12
+ 1462 004a 05AD     		add	r5, sp, #20
+ 1463 004c 2646     		mov	r6, r4
+ 1464 004e 0FCE     		ldmia	r6!, {r0, r1, r2, r3}
+ 1465 0050 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 1466 0052 3368     		ldr	r3, [r6]
+ 1467 0054 2B60     		str	r3, [r5]
+ 300:Src/main.c    **** 
+ 1468              		.loc 1 300 0
+ 1469 0056 0021     		movs	r1, #0
+ 1470 0058 05A8     		add	r0, sp, #20
+ 1471 005a FFF7FEFF 		bl	osThreadCreate
+ 1472              	.LVL91:
+ 1473 005e 0C4B     		ldr	r3, .L87+16
+ 1474 0060 1860     		str	r0, [r3]
+ 303:Src/main.c    ****   Task1Handle = osThreadCreate(osThread(Task1), NULL);
+ 1475              		.loc 1 303 0
+ 1476 0062 6D46     		mov	r5, sp
+ 1477 0064 1434     		adds	r4, r4, #20
+ 1478 0066 0FCC     		ldmia	r4!, {r0, r1, r2, r3}
+ 1479 0068 0FC5     		stmia	r5!, {r0, r1, r2, r3}
+ 1480 006a 2368     		ldr	r3, [r4]
+ 1481 006c 2B60     		str	r3, [r5]
+ 304:Src/main.c    **** 
+ 1482              		.loc 1 304 0
+ 1483 006e 0021     		movs	r1, #0
+ 1484 0070 6846     		mov	r0, sp
+ 1485 0072 FFF7FEFF 		bl	osThreadCreate
+ 1486              	.LVL92:
+ 1487 0076 074B     		ldr	r3, .L87+20
+ 1488 0078 1860     		str	r0, [r3]
+ 316:Src/main.c    ****   
+ 1489              		.loc 1 316 0
+ 1490 007a FFF7FEFF 		bl	osKernelStart
+ 1491              	.LVL93:
+ 1492              	.L85:
+ 1493 007e FEE7     		b	.L85
+ 1494              	.L88:
+ 1495              		.align	2
+ 1496              	.L87:
+ 1497 0080 DC000000 		.word	.LC18
+ 1498 0084 00000000 		.word	huart3
+ 1499 0088 00000000 		.word	huart2
+ 1500 008c 00000000 		.word	.LANCHOR3
+ 1501 0090 00000000 		.word	Task0Handle
+ 1502 0094 00000000 		.word	Task1Handle
+ 1503              		.cfi_endproc
+ 1504              	.LFE73:
+ 1506              		.global	globalCounter
+ 1507              		.global	TickCounter
+ 1508              		.comm	Rx_len,1,1
+ 1509              		.global	recv_end_flag
+ARM GAS  /tmp/ccfBEMvJ.s 			page 43
+
+
+ 1510              		.comm	ReceiveBuff,255,4
+ 1511              		.global	aRxBuffer2_Data_Index
+ 1512              		.global	aRxBuffer2_Data_flag
+ 1513              		.comm	aRxBuffer2_Data,4,4
+ 1514              		.comm	aRxBuffer3,1,4
+ 1515              		.comm	aRxBuffer2,1,4
+ 1516              		.comm	aRxBuffer1,1,4
+ 1517              		.comm	RxMessage,36,4
+ 1518              		.comm	TxMessage,28,4
+ 1519              		.comm	sFliterConfig,40,4
+ 1520              		.comm	Task1Handle,4,4
+ 1521              		.comm	Task0Handle,4,4
+ 1522              		.comm	hdma_usart2_rx,68,4
+ 1523              		.comm	huart3,64,4
+ 1524              		.comm	huart2,64,4
+ 1525              		.comm	huart1,64,4
+ 1526              		.comm	hcan,68,4
+ 1527              		.section	.rodata
+ 1528              		.align	2
+ 1529              		.set	.LANCHOR3,. + 0
+ 1530              	.LC19:
+ 1531 0000 EC000000 		.word	.LC0
+ 1532 0004 00000000 		.word	Func_Task0
+ 1533 0008 0000     		.short	0
+ 1534 000a 0000     		.space	2
+ 1535 000c 00000000 		.word	0
+ 1536 0010 00010000 		.word	256
+ 1537              	.LC20:
+ 1538 0014 E4000000 		.word	.LC2
+ 1539 0018 00000000 		.word	Func_Task1
+ 1540 001c 0000     		.short	0
+ 1541 001e 0000     		.space	2
+ 1542 0020 00000000 		.word	0
+ 1543 0024 00010000 		.word	256
+ 1544              		.section	.bss.aRxBuffer2_Data_flag,"aw",%nobits
+ 1547              	aRxBuffer2_Data_flag:
+ 1548 0000 00       		.space	1
+ 1549              		.section	.bss.TickCounter,"aw",%nobits
+ 1550              		.align	2
+ 1551              		.set	.LANCHOR2,. + 0
+ 1554              	TickCounter:
+ 1555 0000 00000000 		.space	4
+ 1556              		.section	.rodata.str1.4,"aMS",%progbits,1
+ 1557              		.align	2
+ 1558              	.LC4:
+ 1559 0000 0D0A4675 		.ascii	"\015\012Func_Task1\015\012\000"
+ 1559      6E635F54 
+ 1559      61736B31 
+ 1559      0D0A00
+ 1560 000f 00       		.space	1
+ 1561              	.LC5:
+ 1562 0010 41542B43 		.ascii	"AT+CWMODE=2\015\012\000"
+ 1562      574D4F44 
+ 1562      453D320D 
+ 1562      0A00
+ 1563 001e 0000     		.space	2
+ 1564              	.LC6:
+ARM GAS  /tmp/ccfBEMvJ.s 			page 44
+
+
+ 1565 0020 41542B52 		.ascii	"AT+RST\015\012\000"
+ 1565      53540D0A 
+ 1565      00
+ 1566 0029 000000   		.space	3
+ 1567              	.LC7:
+ 1568 002c 41542B43 		.ascii	"AT+CWSAP=\"PYY_8266\",\"12345678\",6,4\015\012\000"
+ 1568      57534150 
+ 1568      3D225059 
+ 1568      595F3832 
+ 1568      3636222C 
+ 1569 0051 000000   		.space	3
+ 1570              	.LC8:
+ 1571 0054 41542B43 		.ascii	"AT+CIPMUX=1\015\012\000"
+ 1571      49504D55 
+ 1571      583D310D 
+ 1571      0A00
+ 1572 0062 0000     		.space	2
+ 1573              	.LC9:
+ 1574 0064 41542B43 		.ascii	"AT+CIPSERVER=1,333\015\012\000"
+ 1574      49505345 
+ 1574      52564552 
+ 1574      3D312C33 
+ 1574      33330D0A 
+ 1575 0079 000000   		.space	3
+ 1576              	.LC10:
+ 1577 007c 41542B43 		.ascii	"AT+CIFSR\015\012\000"
+ 1577      49465352 
+ 1577      0D0A00
+ 1578 0087 00       		.space	1
+ 1579              	.LC11:
+ 1580 0088 0D0A4649 		.ascii	"\015\012FINISHED\015\012\000"
+ 1580      4E495348 
+ 1580      45440D0A 
+ 1580      00
+ 1581 0095 000000   		.space	3
+ 1582              	.LC12:
+ 1583 0098 256300   		.ascii	"%c\000"
+ 1584 009b 00       		.space	1
+ 1585              	.LC13:
+ 1586 009c 0D0A436F 		.ascii	"\015\012Correct\000"
+ 1586      72726563 
+ 1586      7400
+ 1587 00a6 0000     		.space	2
+ 1588              	.LC14:
+ 1589 00a8 0D0A5365 		.ascii	"\015\012SensorCorrect\015\012\000"
+ 1589      6E736F72 
+ 1589      436F7272 
+ 1589      6563740D 
+ 1589      0A00
+ 1590 00ba 0000     		.space	2
+ 1591              	.LC15:
+ 1592 00bc 0D0A00   		.ascii	"\015\012\000"
+ 1593 00bf 00       		.space	1
+ 1594              	.LC16:
+ 1595 00c0 0D0A4675 		.ascii	"\015\012Func_Task0\015\012\000"
+ 1595      6E635F54 
+ 1595      61736B30 
+ARM GAS  /tmp/ccfBEMvJ.s 			page 45
+
+
+ 1595      0D0A00
+ 1596 00cf 00       		.space	1
+ 1597              	.LC17:
+ 1598 00d0 5372632F 		.ascii	"Src/main.c\000"
+ 1598      6D61696E 
+ 1598      2E6300
+ 1599 00db 00       		.space	1
+ 1600              	.LC18:
+ 1601 00dc 444D410D 		.ascii	"DMA\015\012\000"
+ 1601      0A00
+ 1602 00e2 0000     		.space	2
+ 1603              	.LC2:
+ 1604 00e4 5461736B 		.ascii	"Task1\000"
+ 1604      3100
+ 1605 00ea 0000     		.space	2
+ 1606              	.LC0:
+ 1607 00ec 5461736B 		.ascii	"Task0\000"
+ 1607      3000
+ 1608              		.section	.bss.globalCounter,"aw",%nobits
+ 1609              		.align	2
+ 1610              		.set	.LANCHOR0,. + 0
+ 1613              	globalCounter:
+ 1614 0000 00000000 		.space	4
+ 1615              		.section	.bss.aRxBuffer2_Data_Index,"aw",%nobits
+ 1618              	aRxBuffer2_Data_Index:
+ 1619 0000 00       		.space	1
+ 1620              		.section	.bss.recv_end_flag,"aw",%nobits
+ 1621              		.set	.LANCHOR1,. + 0
+ 1624              	recv_end_flag:
+ 1625 0000 00       		.space	1
+ 1626              		.text
+ 1627              	.Letext0:
+ 1628              		.file 2 "/home/user/Library/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/machine/_default_ty
+ 1629              		.file 3 "/home/user/Library/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/sys/_stdint.h"
+ 1630              		.file 4 "Drivers/CMSIS/Include/core_cm3.h"
+ 1631              		.file 5 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f103xe.h"
+ 1632              		.file 6 "Drivers/CMSIS/Device/ST/STM32F1xx/Include/stm32f1xx.h"
+ 1633              		.file 7 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_def.h"
+ 1634              		.file 8 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc.h"
+ 1635              		.file 9 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_rcc_ex.h"
+ 1636              		.file 10 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_gpio.h"
+ 1637              		.file 11 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_dma.h"
+ 1638              		.file 12 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_can.h"
+ 1639              		.file 13 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_can_ex.h"
+ 1640              		.file 14 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_tim.h"
+ 1641              		.file 15 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_uart.h"
+ 1642              		.file 16 "Middlewares/Third_Party/FreeRTOS/Source/include/task.h"
+ 1643              		.file 17 "Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS/cmsis_os.h"
+ 1644              		.file 18 "Inc/arm_etm.h"
+ 1645              		.file 19 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal_cortex.h"
+ 1646              		.file 20 "/home/user/Library/gcc-arm-none-eabi-5_4-2016q3/arm-none-eabi/include/stdio.h"
+ 1647              		.file 21 "Drivers/STM32F1xx_HAL_Driver/Inc/stm32f1xx_hal.h"
+ARM GAS  /tmp/ccfBEMvJ.s 			page 46
+
+
+DEFINED SYMBOLS
+                            *ABS*:00000000 main.c
+     /tmp/ccfBEMvJ.s:20     .text.MX_DMA_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:24     .text.MX_DMA_Init:00000000 MX_DMA_Init
+     /tmp/ccfBEMvJ.s:55     .text.MX_DMA_Init:0000001c $d
+     /tmp/ccfBEMvJ.s:60     .text.MX_GPIO_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:64     .text.MX_GPIO_Init:00000000 MX_GPIO_Init
+     /tmp/ccfBEMvJ.s:167    .text.MX_GPIO_Init:0000008c $d
+     /tmp/ccfBEMvJ.s:174    .text.MX_NVIC_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:178    .text.MX_NVIC_Init:00000000 MX_NVIC_Init
+     /tmp/ccfBEMvJ.s:234    .text.Func_Task1:00000000 $t
+     /tmp/ccfBEMvJ.s:239    .text.Func_Task1:00000000 Func_Task1
+     /tmp/ccfBEMvJ.s:350    .text.Func_Task1:000000a0 $d
+                            *COM*:00000040 huart2
+                            *COM*:00000001 aRxBuffer2
+                            *COM*:00000040 huart3
+     /tmp/ccfBEMvJ.s:365    .text.configure_tracing:00000000 $t
+     /tmp/ccfBEMvJ.s:370    .text.configure_tracing:00000000 configure_tracing
+     /tmp/ccfBEMvJ.s:460    .text.configure_tracing:000000a4 $d
+     /tmp/ccfBEMvJ.s:470    .text.configure_watchpoint:00000000 $t
+     /tmp/ccfBEMvJ.s:475    .text.configure_watchpoint:00000000 configure_watchpoint
+     /tmp/ccfBEMvJ.s:505    .text.configure_watchpoint:0000001c $d
+     /tmp/ccfBEMvJ.s:512    .text.ITM_Print:00000000 $t
+     /tmp/ccfBEMvJ.s:517    .text.ITM_Print:00000000 ITM_Print
+     /tmp/ccfBEMvJ.s:562    .text.ITM_Print:00000044 $d
+     /tmp/ccfBEMvJ.s:567    .text.ITM_SendValue:00000000 $t
+     /tmp/ccfBEMvJ.s:572    .text.ITM_SendValue:00000000 ITM_SendValue
+     /tmp/ccfBEMvJ.s:606    .text.uartdamget:00000000 $t
+     /tmp/ccfBEMvJ.s:611    .text.uartdamget:00000000 uartdamget
+     /tmp/ccfBEMvJ.s:871    .text.uartdamget:00000164 $d
+                            *COM*:000000ff ReceiveBuff
+                            *COM*:00000001 Rx_len
+                            *COM*:00000044 hcan
+     /tmp/ccfBEMvJ.s:887    .text.Func_Task0:00000000 $t
+     /tmp/ccfBEMvJ.s:892    .text.Func_Task0:00000000 Func_Task0
+     /tmp/ccfBEMvJ.s:954    .text.Func_Task0:00000048 $d
+                            *COM*:0000001c TxMessage
+                            *COM*:00000040 huart1
+     /tmp/ccfBEMvJ.s:962    .text.HAL_TIM_PeriodElapsedCallback:00000000 $t
+     /tmp/ccfBEMvJ.s:967    .text.HAL_TIM_PeriodElapsedCallback:00000000 HAL_TIM_PeriodElapsedCallback
+     /tmp/ccfBEMvJ.s:1022   .text.HAL_TIM_PeriodElapsedCallback:00000044 $d
+     /tmp/ccfBEMvJ.s:1029   .text._Error_Handler:00000000 $t
+     /tmp/ccfBEMvJ.s:1034   .text._Error_Handler:00000000 _Error_Handler
+     /tmp/ccfBEMvJ.s:1049   .text.MX_CAN_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:1053   .text.MX_CAN_Init:00000000 MX_CAN_Init
+     /tmp/ccfBEMvJ.s:1109   .text.MX_CAN_Init:0000003c $d
+     /tmp/ccfBEMvJ.s:1116   .text.MX_USART1_UART_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:1120   .text.MX_USART1_UART_Init:00000000 MX_USART1_UART_Init
+     /tmp/ccfBEMvJ.s:1166   .text.MX_USART1_UART_Init:00000030 $d
+     /tmp/ccfBEMvJ.s:1173   .text.MX_USART2_UART_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:1177   .text.MX_USART2_UART_Init:00000000 MX_USART2_UART_Init
+     /tmp/ccfBEMvJ.s:1223   .text.MX_USART2_UART_Init:00000030 $d
+     /tmp/ccfBEMvJ.s:1230   .text.MX_USART3_UART_Init:00000000 $t
+     /tmp/ccfBEMvJ.s:1234   .text.MX_USART3_UART_Init:00000000 MX_USART3_UART_Init
+     /tmp/ccfBEMvJ.s:1280   .text.MX_USART3_UART_Init:00000030 $d
+     /tmp/ccfBEMvJ.s:1287   .text.SystemClock_Config:00000000 $t
+     /tmp/ccfBEMvJ.s:1292   .text.SystemClock_Config:00000000 SystemClock_Config
+ARM GAS  /tmp/ccfBEMvJ.s 			page 47
+
+
+     /tmp/ccfBEMvJ.s:1387   .text.SystemClock_Config:00000080 $d
+     /tmp/ccfBEMvJ.s:1393   .text.main:00000000 $t
+     /tmp/ccfBEMvJ.s:1398   .text.main:00000000 main
+     /tmp/ccfBEMvJ.s:1497   .text.main:00000080 $d
+                            *COM*:00000004 Task0Handle
+                            *COM*:00000004 Task1Handle
+     /tmp/ccfBEMvJ.s:1613   .bss.globalCounter:00000000 globalCounter
+     /tmp/ccfBEMvJ.s:1554   .bss.TickCounter:00000000 TickCounter
+     /tmp/ccfBEMvJ.s:1624   .bss.recv_end_flag:00000000 recv_end_flag
+     /tmp/ccfBEMvJ.s:1618   .bss.aRxBuffer2_Data_Index:00000000 aRxBuffer2_Data_Index
+     /tmp/ccfBEMvJ.s:1547   .bss.aRxBuffer2_Data_flag:00000000 aRxBuffer2_Data_flag
+                            *COM*:00000004 aRxBuffer2_Data
+                            *COM*:00000001 aRxBuffer3
+                            *COM*:00000001 aRxBuffer1
+                            *COM*:00000024 RxMessage
+                            *COM*:00000028 sFliterConfig
+                            *COM*:00000044 hdma_usart2_rx
+     /tmp/ccfBEMvJ.s:1528   .rodata:00000000 $d
+     /tmp/ccfBEMvJ.s:1548   .bss.aRxBuffer2_Data_flag:00000000 $d
+     /tmp/ccfBEMvJ.s:1550   .bss.TickCounter:00000000 $d
+     /tmp/ccfBEMvJ.s:1557   .rodata.str1.4:00000000 $d
+     /tmp/ccfBEMvJ.s:1609   .bss.globalCounter:00000000 $d
+     /tmp/ccfBEMvJ.s:1619   .bss.aRxBuffer2_Data_Index:00000000 $d
+     /tmp/ccfBEMvJ.s:1625   .bss.recv_end_flag:00000000 $d
+                     .debug_frame:00000010 $d
+
+UNDEFINED SYMBOLS
+HAL_GPIO_WritePin
+HAL_GPIO_Init
+HAL_NVIC_SetPriority
+HAL_NVIC_EnableIRQ
+HAL_UART_Receive_IT
+HAL_UART_Transmit
+osDelay
+sprintf
+HAL_CAN_Transmit
+HAL_UART_Receive_DMA
+HAL_IncTick
+HAL_CAN_Init
+HAL_UART_Init
+HAL_RCC_OscConfig
+HAL_RCC_ClockConfig
+HAL_RCC_GetHCLKFreq
+HAL_SYSTICK_Config
+HAL_SYSTICK_CLKSourceConfig
+HAL_Init
+osThreadCreate
+osKernelStart
